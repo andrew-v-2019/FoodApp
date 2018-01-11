@@ -1,0 +1,55 @@
+
+ <div *ngIf="!menu" class="text-center">
+    <i class="fa fa-cog fa-spin fa-2x"></i>
+ </div>
+ <div *ngIf="menu">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="text-center">БИЗНЕС – ЛАНЧ на 
+                <span *ngIf='menu.editable'>
+                  <ng2-datepicker [options]="dateOptions" [(ngModel)]="date">             
+                  </ng2-datepicker>
+                </span>
+                <span *ngIf='!menu.editable'>
+                        {{date.formatted}}
+                </span>
+            </h2>
+            <h2 class="text-center">цена 
+                <span *ngIf='menu.editable'>
+                    <input class="input-sm"  min="1" max="999" type="number" [(ngModel)]='menu.price'>
+                </span> 
+                <span *ngIf='!menu.editable' >
+                    <span>{{menu.price}}</span> 
+                </span>рублей
+            </h2>
+            <h3 class="text-center">Меню</h3>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-xs-12 col-xs-offset-10">
+       <div class="btn-group" dropdown>
+        <button dropdownToggle type="button" class="btn btn-default dropdown-toggle">
+          Загрузить... <span class="caret"></span>
+        </button>
+        <ul *dropdownMenu class="dropdown-menu" role="menu">
+          <li role="menuitem"><button class="dropdown-item btn btn-link"  (click)="getTemplateMenu()">Загрузить из предыдущего</button></li>
+          <li class="divider dropdown-divider"></li>
+          <li role="menuitem"><button class="dropdown-item btn btn-link" href='#' (click)="getEmptyMenu()">Отчистить</button>
+          </li>
+        </ul>
+      </div>
+      </div>
+    </div>
+
+    <div *ngFor="let section of menu.sections">
+        <la-section-editor [section] = "section" [editable] = "menu.editable" >  </la-section-editor> 
+    </div>
+
+    <div class="row" *ngIf='menu.editable'>
+            <div class="form-group col-xs-12 col-xs-offset-10">
+                <div class="input-group">
+            <button class="btn btn-success btn-lg" (click)="save()">Отправить</button>           
+        </div>
+    </div>
+</div>

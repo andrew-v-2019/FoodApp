@@ -1,0 +1,35 @@
+<h4>
+   {{section.name}}
+</h4>
+
+<div class="form-group">
+    <div *ngFor="let item of section.items">
+        <div class="row" *ngIf="editable">
+            <div class="col-xs-12">
+                <div class="input-group" [ngClass]="{'has-error': section.items.length==1 && item.name.length==0}">
+                    <span class="input-group-addon" >{{item.number}}</span>
+                    <input type="text" class="form-control"  placeholder="Название блюда..."  [(ngModel)]='item.name' >
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" (click)="addEmptyItem($event)">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                        </button>
+                    </span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button"  (click)="removeItem(item)">
+                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="!editable">
+            <div class="col-xs-12">
+                <div class="input-group">
+                    <span class="input-group-addon" >{{item.number}}</span>
+                    <input type="text" class="form-control" disabled placeholder="Название блюда..."  [(ngModel)]="item.name" >
+                </div>
+            </div>
+        </div>
+        <br>
+    </div>
+</div>

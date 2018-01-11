@@ -1,0 +1,115 @@
+{
+  "version": 2,
+  "targets": {
+    ".NETFramework,Version=v4.5.2": {
+      "Spire.Doc/5.9.3": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Spire.Doc.dll": {},
+          "lib/net40/Spire.License.dll": {},
+          "lib/net40/Spire.Pdf.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Spire.Doc.dll": {},
+          "lib/net40/Spire.License.dll": {},
+          "lib/net40/Spire.Pdf.dll": {}
+        }
+      },
+      "ViewModels/1.0.0": {
+        "type": "project"
+      }
+    },
+    ".NETFramework,Version=v4.5.2/win": {
+      "Spire.Doc/5.9.3": {
+        "type": "package",
+        "compile": {
+          "lib/net40/Spire.Doc.dll": {},
+          "lib/net40/Spire.License.dll": {},
+          "lib/net40/Spire.Pdf.dll": {}
+        },
+        "runtime": {
+          "lib/net40/Spire.Doc.dll": {},
+          "lib/net40/Spire.License.dll": {},
+          "lib/net40/Spire.Pdf.dll": {}
+        }
+      },
+      "ViewModels/1.0.0": {
+        "type": "project"
+      }
+    }
+  },
+  "libraries": {
+    "Spire.Doc/5.9.3": {
+      "sha512": "GrEaNLoUefG+D9wskoupDzPt4nC2t3LiSAteDc2AVaEvQm80T25Vf4u/EOG/tryDgSyn6ZVMeSmLXSXRCD4Cvw==",
+      "type": "package",
+      "path": "spire.doc/5.9.3",
+      "files": [
+        "lib/net20/Spire.Doc.XML",
+        "lib/net20/Spire.Doc.dll",
+        "lib/net20/Spire.License.dll",
+        "lib/net20/Spire.License.xml",
+        "lib/net20/Spire.Pdf.dll",
+        "lib/net35/Spire.Doc.XML",
+        "lib/net35/Spire.Doc.dll",
+        "lib/net35/Spire.License.dll",
+        "lib/net35/Spire.License.xml",
+        "lib/net35/Spire.Pdf.dll",
+        "lib/net40-client/Spire.Doc.XML",
+        "lib/net40-client/Spire.Doc.dll",
+        "lib/net40-client/Spire.License.dll",
+        "lib/net40-client/Spire.License.xml",
+        "lib/net40-client/Spire.Pdf.dll",
+        "lib/net40/Spire.Doc.XML",
+        "lib/net40/Spire.Doc.dll",
+        "lib/net40/Spire.License.dll",
+        "lib/net40/Spire.License.xml",
+        "lib/net40/Spire.Pdf.dll",
+        "spire.doc.5.9.3.nupkg.sha512",
+        "spire.doc.nuspec"
+      ]
+    },
+    "ViewModels/1.0.0": {
+      "type": "project",
+      "path": "../ViewModels/ViewModels.csproj",
+      "msbuildProject": "../ViewModels/ViewModels.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "": [
+      "Spire.Doc >= 5.9.3"
+    ],
+    ".NETFramework,Version=v4.5.2": []
+  },
+  "packageFolders": {
+    "C:\\Users\\Андрей\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "restore": {
+      "projectUniqueName": "C:\\git\\dinner_automatization\\LunchApp\\Converters\\Converters.csproj",
+      "projectName": "Converters",
+      "projectPath": "C:\\git\\dinner_automatization\\LunchApp\\Converters\\Converters.csproj",
+      "projectJsonPath": "C:\\git\\dinner_automatization\\LunchApp\\Converters\\project.json",
+      "projectStyle": "ProjectJson",
+      "frameworks": {
+        "net452": {
+          "projectReferences": {
+            "C:\\git\\dinner_automatization\\LunchApp\\ViewModels\\ViewModels.csproj": {
+              "projectPath": "C:\\git\\dinner_automatization\\LunchApp\\ViewModels\\ViewModels.csproj"
+            }
+          }
+        }
+      }
+    },
+    "dependencies": {
+      "Spire.Doc": "5.9.3"
+    },
+    "frameworks": {
+      "net452": {}
+    },
+    "runtimes": {
+      "win": {
+        "#import": []
+      }
+    }
+  }
+}
