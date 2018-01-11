@@ -21,9 +21,10 @@ import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { HttpModule } from '@angular/http';
 import { SectionEditorComponent } from './components/section-editor/section-editor.component';
 
-import { DatePickerModule } from 'ng2-datepicker';
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
+
 
 @NgModule({
   imports: [     
@@ -31,7 +32,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 	  FormsModule,
 	  AppRoutingModule, 
 	  HttpModule,
-	  DatePickerModule,
+	  
 	  BsDropdownModule.forRoot()
   ],
   declarations: [

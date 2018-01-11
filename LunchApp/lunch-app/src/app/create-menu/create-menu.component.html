@@ -7,8 +7,10 @@
         <div class="col-xs-12">
             <h2 class="text-center">БИЗНЕС – ЛАНЧ на 
                 <span *ngIf='menu.editable'>
-                  <ng2-datepicker [options]="dateOptions" [(ngModel)]="date">             
-                  </ng2-datepicker>
+                    
+                    <input [ngModel]="date | date:'yyyy-MM-dd'" 
+                    (ngModelChange)="date = $event"
+                    type="date" name="date" class="input-sm"/>                
                 </span>
                 <span *ngIf='!menu.editable'>
                         {{date.formatted}}

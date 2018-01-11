@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuService }  from '../services/menu/menu.service';
+import { MenuService } from '../services/menu/menu.service';
 import { Menu } from "app/models/menu/menu";
-
-import { DatePickerOptions, DateModel } from 'ng2-datepicker';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import * as moment from 'moment';
 import { Moment } from "moment";
 import * as _ from "lodash";
 
+
 const vsDateFormat: string = "YYYY-MM-DD";
-const vmDateFormat: string = "DD.MM.YYYY";
 
 
 @Component({
@@ -23,53 +21,52 @@ const vmDateFormat: string = "DD.MM.YYYY";
 
 export class CreateMenuComponent implements OnInit {
 
-  constructor(private menuService:MenuService) {
-    this.dateOptions = new DatePickerOptions({format:vmDateFormat, locale:'ru', selectYearText:'Год'});
-   }
-   menu :Menu;
-   dateOptions :DatePickerOptions;
-   date:DateModel;
+  constructor(private menuService: MenuService) {
+
+  }
+  menu: Menu;
+  date: Date;
 
   ngOnInit() {
-    let observer = this.menuService.getLastMenu();   
-    observer.subscribe(value =>this.map(value));
+    let observer = this.menuService.getLastMenu();
+    observer.subscribe(value => this.map(value));
   }
 
-  map(value:Menu){
-    let dateModel:DateModel = new DateModel();
-    let momentObj = moment(value.lunchDate,vsDateFormat);
-    dateModel.momentObj = momentObj;
-    dateModel.formatted = momentObj.format(vmDateFormat);
-    this.date = dateModel;
-    this.menu=value;   
+  map(value: Menu) {
+    let momentObj = moment(value.lunchDate, vsDateFormat).toString();
+    this.date = new Date(momentObj);
+    this.menu = value;
   }
 
-  getEmptyMenu(){
+  getEmptyMenu() {
     this.menu = null;
-    let observer = this.menuService.getEmptyMenu();   
-    observer.subscribe(value =>this.map(value));
+    let observer = this.menuService.getEmptyMenu();
+    observer.subscribe(value => this.map(value));
   }
 
-  getTemplateMenu(){
+  getTemplateMenu() {
     this.menu = null;
-    let observer = this.menuService.getTemplateMenu();   
-    observer.subscribe(value =>this.map(value));
+    let observer = this.menuService.getTemplateMenu();
+    observer.subscribe(value => this.map(value));
   }
 
-  save(){
+  save() {
+    
     let m = this.menu;
-    if (!m) return;
+    let momentObj = moment(this.date, vsDateFormat).format(vsDateFormat);
+    m.lunchDate =  momentObj;
   
-    var incorrectSection= _.find(m.sections, function(section){ return section.items.length && section.items[0].name.trim().length==0});
-    if (incorrectSection){
+    if (!m) return;
+    var incorrectSection = _.find(m.sections, function (section) { return section.items.length && section.items[0].name.trim().length == 0 });
+    if (incorrectSection) {
       console.log('incorrect section');
       return;
     }
-    let observer =this.menuService.updateMenu(m);
-    observer.subscribe(value =>this.menuUpdateEvent(value));
+    let observer = this.menuService.updateMenu(m);
+    observer.subscribe(value => this.menuUpdateEvent(value));
   }
 
-  menuUpdateEvent(r){
-     
+  menuUpdateEvent(r) {
+
   }
 }

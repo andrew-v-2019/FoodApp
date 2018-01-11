@@ -9,7 +9,7 @@ import { UserLunch } from 'app/models/userLunch/userLunch';
 
 @Injectable()
 export class LunchService {
-  private userLunchUrl = 'http://localhost:54411/api/userlunch/get';
+  private userLunchUrl = 'http://localhost:51396/api/userlunch/get';
   constructor(private http: Http) { 
     
       }

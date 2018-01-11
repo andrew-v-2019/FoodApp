@@ -9,11 +9,11 @@ import 'rxjs/add/operator/catch';
 @Injectable()
 export class MenuService {
   
-  private menuUrl = 'http://localhost:54411/api/menus/last';
-  private emptyMenuUrl = 'http://localhost:54411/api/menus/empty';
+  private menuUrl = 'http://localhost:51396/api/menus/last';
+  private emptyMenuUrl = 'http://localhost:51396/api/menus/empty';
   private templateMenuUrl = 'http://localhost:54411/api/menus/template';
 
-  private updateMenuUrl = 'http://localhost:54411/api/menus/update';
+  private updateMenuUrl = 'http://localhost:51396/api/menus/update';
 
   constructor(private http: Http) { 
 
