@@ -18,7 +18,7 @@ namespace Data.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer("Data Source=10W10PC10\\SQLEXPRESS;Integrated Security=True; Initial Catalog=food");
+            //options.UseSqlServer("Data Source=10W10PC10\\SQLEXPRESS;Integrated Security=True; Initial Catalog=food");
         }
 
 

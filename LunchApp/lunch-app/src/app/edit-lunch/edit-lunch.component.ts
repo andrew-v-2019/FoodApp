@@ -21,7 +21,6 @@ export class EditLunchComponent implements OnInit {
   constructor(private userLunchService: LunchService) { }
 
   lunch: UserLunch;
-  lunchForm: FormGroup;
 
   ngOnInit() {
     let observer = this.userLunchService.get();
@@ -33,12 +32,13 @@ export class EditLunchComponent implements OnInit {
     this.lunch.lunchDate = moment(value.lunchDate, vsDateFormat).format(vmDateFormat);
   }
 
-  save() {
-
+  save(lunchForm) {
+      console.log("Save");
   }
 
   itemChecked(val, selectedItem, section) {
     console.log(selectedItem, section);
+    section.checked = true;
     _.each(section.items, function (item, idx) {
       if (item.menuItemId != selectedItem.menuItemId) {
         item.checked = false;

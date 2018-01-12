@@ -1,71 +1,71 @@
 <div *ngIf="!lunch" class="text-center">
-  <i class="fa fa-cog fa-spin fa-2x"></i>
+    <i class="fa fa-cog fa-spin fa-2x"></i>
 </div>
 <div *ngIf="lunch">
-  <div class="row">
-      <div class="col-xs-12">
-          <h2 class="text-center">БИЗНЕС – ЛАНЧ на 
-              <span>
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 class="text-center">БИЗНЕС – ЛАНЧ на
+                <span>
                       {{lunch.lunchDate}}
               </span>
-          </h2>
-          <h2 class="text-center" *ngIf="lunch.price && lunch.price>0">цена 
-              <span>
-                  <span>{{lunch.price}}</span> 
-              </span>рублей
-          </h2>
-          <h3 class="text-center">Меню</h3>
-      </div>
-  </div>
-  <form #lunchForm="ngForm" (ngSubmit)="save()">
+            </h2>
+            <h2 class="text-center" *ngIf="lunch.price && lunch.price>0">цена
+                <span>
+                  <span>{{lunch.price}}</span>
+                </span>рублей
+            </h2>
+            <h3 class="text-center">Меню</h3>
+        </div>
+    </div>
+    <form #lunchForm="ngForm" (ngSubmit)="save(lunchForm.form)">
         <div class="row">
-                <div class="col-xs-5 col-sm-offset-7">
-                    <div class="form-group" [ngClass]="{'has-error': !name.valid && name.touched}">
-                        <label for="name">Ваше имя:</label>
-                        <input type="text" 
-                        class="form-control" 
-                        id="name" name="name" placeholder="Введите ваше имя" 
-                        [(ngModel)]="lunch.user.name" 
-                        #name="ngModel"
-                        required>
-                         <small *ngIf='!name.valid && name.touched'  class="error" class="text-danger text-center">
+            <div class="col-xs-5 col-sm-offset-7">
+                <div class="form-group" [ngClass]="{'has-error': !name.valid && (name.touched || lunchForm.submitted)}">
+                    <label for="name">Ваше имя:</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Введите ваше имя" [(ngModel)]="lunch.user.name"
+                        #name="ngModel" required>
+                    <small *ngIf='!name.valid && (name.touched || lunchForm.submitted)' class="text-danger text-center">
                                 Всё-таки введите ваше имя
                          </small>
-                    </div>
-                </div>
-               
-        </div>
-
-        <div *ngFor="let section of lunch.sections">
-                <h4>
-                        {{section.name}}
-                </h4>
-                <div class="form-group">
-                    <ul>
-                            <div *ngFor="let item of section.items">
-                                <li>
-                                    <div class="checkbox">
-                                            <label><input 
-                                                (ngModelChange)="itemChecked($event, item, section)"  
-                                                [(ngModel)]='item.checked' 
-                                                [name] = "'lunchItem'+item.number" 
-                                                type="checkbox" 
-                                                [attr.disabled]="!lunch.editable?'':null" value="">
-                                                {{item.number}}. {{item.name}}
-                                            </label>
-                                    </div>
-                                </li>
-                            </div>
-                    </ul>
                 </div>
             </div>
 
+        </div>
+
+        <div *ngFor="let section of lunch.sections">
+
+            <div class="form-group">
+                <h4 [ngClass]="{'text-danger': !section.checked && lunchForm.submitted}">
+                    {{section.name}}
+                </h4>
+                <ul>
+                    <div *ngFor="let item of section.items">
+                        <li>
+                            <div class="checkbox">
+                                <label><input 
+                                                (ngModelChange)="itemChecked($event, item, section)"  
+                                                [(ngModel)]='item.checked' 
+                                                [name] = "'lunchItem'+section.number+'_'+item.number" 
+                                                type="checkbox" 
+                                                [attr.disabled]="!lunch.editable?'':null" value="">
+                                                 {{item.name}}
+                                </label>
+                            </div>
+                        </li>
+                    </div>
+                    <small *ngIf='!section.checked && lunchForm.submitted' class="text-danger text-center">
+                            Выберите один элемент
+                     </small>
+                </ul>
+            </div>
+        </div>
+
         <div class="row" *ngIf='lunch.editable'>
-                <div class="form-group col-xs-12 col-xs-offset-10">
-                    <div class="input-group">
-                        <button type="submit" class="btn btn-success btn-lg">Отправить</button>           
-                   </div>
-               </div>
+            <div class="form-group col-xs-12 col-xs-offset-10">
+                <div class="input-group">
+                    <button type="submit" class="btn btn-success btn-lg">Отправить</button>
+                </div>
+            </div>
         </div>
     </form>
 </div>

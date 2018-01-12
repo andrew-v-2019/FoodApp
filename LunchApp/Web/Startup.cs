@@ -42,14 +42,14 @@ namespace Web
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
+            app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             //loggerFactory.AddDebug();
             Seed(app);
             if (env.IsDevelopment() || env.IsEnvironment("andrewOffice"))
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(b => b.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+                app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
             }
             else
             {
