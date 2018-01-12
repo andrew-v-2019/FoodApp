@@ -23,6 +23,10 @@ import { SectionEditorComponent } from './components/section-editor/section-edit
 
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import {ResourceModule} from 'ngx-resource';
+
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ToastModule} from 'ng2-toastr/ng2-toastr';
 
 
 
@@ -32,8 +36,10 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 	  FormsModule,
 	  AppRoutingModule, 
 	  HttpModule,
-	  
-	  BsDropdownModule.forRoot()
+	  ResourceModule.forRoot(),
+	  BsDropdownModule.forRoot(),
+	  BrowserAnimationsModule,
+	  ToastModule.forRoot()
   ],
   declarations: [
       AppComponent, 

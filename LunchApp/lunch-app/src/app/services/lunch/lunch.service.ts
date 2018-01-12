@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
-
- import { Http, Response, Headers, RequestOptions } from '@angular/http';
- import { Observable } from "rxjs/Observable";
- import { Menu } from "app/models/menu/menu";
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
+import { Observable } from "rxjs/Observable";
 import { UserLunch } from 'app/models/userLunch/userLunch';
+import { LunchResource } from "app/resources/lunchResource";
 
 @Injectable()
 export class LunchService {
-  private userLunchUrl = 'http://localhost:5000/api/userlunch/get';
-  constructor(private http: Http) { 
-    
-      }
-
-      get() : Observable<UserLunch> {
-        return this.http.get(this.userLunchUrl)
-                        .map((res:Response) => {return res.json()})
-                        .catch((error:any) => 'Server error');
-    }
+  constructor(private lunchResource: LunchResource) {
 
   }
+
+  get(): Observable<UserLunch> {
+    var obs = this.lunchResource.get().$observable;
+    return obs;
+  }
+
+  updateLunch(lunch: UserLunch): Observable<UserLunch> {
+    var obs = this.lunchResource.update(lunch).$observable;
+    return obs;
+  }
+
+}

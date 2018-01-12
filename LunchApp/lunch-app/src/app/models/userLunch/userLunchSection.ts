@@ -6,4 +6,5 @@ export class UserLunchSection {
     menuSectionId:number;
     menuId:number;
     items:UserLunchItem[];
+    checked:boolean;
  }

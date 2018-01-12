@@ -24,12 +24,19 @@ namespace Web.Controllers
             return Ok(model);
         }
 
-       
+
         [HttpGet("last")]
         public IActionResult GetLast()
         {
-            var model = _menuService.GetLastMenu();
-            return Ok(model);
+            try
+            {
+                var model = _menuService.GetLastMenu();
+                return Ok(model);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         [HttpGet("template")]
@@ -51,7 +58,7 @@ namespace Web.Controllers
             {
                 return BadRequest(e);
             }
-          
+
         }
 
 

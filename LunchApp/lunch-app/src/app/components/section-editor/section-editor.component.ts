@@ -12,6 +12,7 @@ import { MenuItem } from "app/models/menu/menu-item";
 export class SectionEditorComponent implements OnInit {
   @Input() section: MenuSection;
   @Input() editable: boolean;
+  @Input() loading: boolean;
 
   constructor() { }
 

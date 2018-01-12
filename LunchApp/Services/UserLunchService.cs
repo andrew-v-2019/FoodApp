@@ -21,22 +21,64 @@ namespace Services
         #region update
         public UserLunchViewModel UpdateUserLunch(UserLunchViewModel model)
         {
-            var userLunch = new UserLunch()
+            var newLunch = false;
+            var userLunch = _context.UserLunches.FirstOrDefault(x => x.UserLunchId == model.UserLunchId);
+            if (userLunch == null)
             {
-                MenuId = model.MenuId,
-                UserId = model.User.Id,
-                UserLunchId = model.UserLunchId,
-                Submitted = false,
-                Editable = true
-            };
-            return null;
+                newLunch = true;
+                userLunch = new UserLunch();
+            }
+            userLunch.MenuId = model.MenuId;
+            userLunch.UserId = model.User.Id;
+            userLunch.UserLunchId = model.UserLunchId;
+            userLunch.Submitted = true;
+            userLunch.Editable = true;
+            userLunch.SubmitionDate = DateTime.Now;
+            if (newLunch)
+            {
+                userLunch.CreationDate = DateTime.Now;
+                _context.UserLunches.Add(userLunch);
+                _context.SaveChanges();
+            }
+            var lunchId = userLunch.UserLunchId;
+            model.UserLunchId = lunchId;
+            UpdateLunchItems(model);
+            return model;
         }
 
-        private UserLunch AddOrUpdate(UserLunch userLunch)
+        private UserLunchViewModel UpdateLunchItems(UserLunchViewModel model)
         {
-            //var l = _context.UserLunches()
-            return null;
+            foreach (var sec in model.Sections)
+            {
+                foreach (var item in sec.Items)
+                {
+                    UpdateUserLunchItem(item, model.UserLunchId);
+                }
+            }
+            return model;
         }
+
+        private UserLunchItemViewModel UpdateUserLunchItem(UserLunchItemViewModel model, int userLunchId)
+        {
+            if (!model.Checked) return model;
+            var newItem = false;
+            var dbItem =
+                _context.UserLunchItems.FirstOrDefault(
+                    x => x.MenuItemId == model.MenuItemId && x.UserLunchId == userLunchId);
+            if (dbItem == null)
+            {
+                newItem = true;
+                dbItem = new UserLunchItem();
+            }
+            dbItem.UserLunchId = userLunchId;
+            dbItem.MenuItemId = model.MenuItemId;
+            if (!newItem) return model;
+            dbItem.Date = DateTime.Now;
+            _context.UserLunchItems.Add(dbItem);
+            _context.SaveChanges();
+            return model;
+        }
+
         #endregion
 
 
@@ -97,7 +139,7 @@ namespace Services
 
             var sections = _context.MenuSections.Select(s => new UserLunchSectionViewModel()
             {
-                
+
                 MenuSectionId = s.MenuSectionId,
                 MenuId = activeMenu.MenuId,
                 Name = s.Name,

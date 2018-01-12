@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using ViewModels.UserLunch;
 
@@ -27,10 +28,18 @@ namespace Web.Controllers
         [HttpPost("update")]
         public IActionResult Update([FromBody] UserLunchViewModel model)
         {
+            try
+            {
+                var user = _userService.UpdateUser(model.User);
+                model.User = user;
+                var refreshedModel = _userLunchService.UpdateUserLunch(model);
+                return Ok(refreshedModel);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
 
-            var user = _userService.UpdateUser(model.User);
-            model.User = user;
-            return Ok(null);
         }
 
 
