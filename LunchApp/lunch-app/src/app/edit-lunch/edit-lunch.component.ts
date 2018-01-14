@@ -63,7 +63,6 @@ export class EditLunchComponent implements OnInit {
 
   lunchUpdatedEvent(r) {
     this.toastr.success('Сохранено', null, {showCloseButton: true });
-    //this.map(r);
     this.reindex();
     this.loading = false;
   }
