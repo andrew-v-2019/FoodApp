@@ -8,6 +8,7 @@ import * as _ from "lodash";
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 
 
+const vmDateFormat: string = "DD.MM.YYYY";
 const vsDateFormat: string = "YYYY-MM-DD";
 
 
@@ -26,6 +27,7 @@ export class CreateMenuComponent implements OnInit {
   menu: Menu;
   date: Date;
   loading: boolean;
+  dateFormatted: string;
 
   ngOnInit() {
     this.loading = true;
@@ -35,7 +37,7 @@ export class CreateMenuComponent implements OnInit {
 
   error(err: any) {
     var er = err.json();
-    this.toastr.error(er.Message, 'Ошибка', { enableHTML: true, animate: 'flyRight', showCloseButton: true });
+    this.toastr.error(er.Message, 'Ошибка', { showCloseButton: true });
     this.loading = false;
   }
 
@@ -44,6 +46,7 @@ export class CreateMenuComponent implements OnInit {
     this.date = new Date(momentObj);
     this.menu = value;
     this.loading = false;
+    this.dateFormatted = moment(value.lunchDate, vsDateFormat).format(vmDateFormat);
   }
 
   getEmptyMenu() {
@@ -73,7 +76,7 @@ export class CreateMenuComponent implements OnInit {
   }
 
   menuUpdateEvent(r) {
-    this.toastr.success('Сохранено', null, { enableHTML: true, animate: 'flyRight', showCloseButton: true });
+    this.toastr.success('Сохранено', null, { showCloseButton: true });
     this.loading = false;
   }
 }

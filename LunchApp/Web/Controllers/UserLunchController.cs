@@ -17,12 +17,13 @@ namespace Web.Controllers
         }
 
         [HttpGet("get")]
-        public UserLunchViewModel Get()
+        public IActionResult Get()
         {
             var user = GetCurrentUser();
             var userLunchModel = _userLunchService.GetCurrentLunch(user.Id);
+            if (userLunchModel == null) return new EmptyResult();
             userLunchModel.User = user;
-            return userLunchModel;
+            return Ok(userLunchModel);
         }
 
         [HttpPost("update")]

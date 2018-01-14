@@ -6,12 +6,12 @@
         <div class="col-xs-12">
             <h2 class="text-center">БИЗНЕС – ЛАНЧ на
                 <span>
-                      {{lunch.lunchDate}}
-              </span>
+                    {{lunch.lunchDate}}
+                </span>
             </h2>
             <h2 class="text-center" *ngIf="lunch.price && lunch.price>0">цена
                 <span>
-                  <span>{{lunch.price}}</span>
+                    <span>{{lunch.price}}</span>
                 </span>рублей
             </h2>
             <h3 class="text-center">Меню</h3>
@@ -20,13 +20,20 @@
     <form #lunchForm="ngForm" (ngSubmit)="save(lunchForm.form)">
         <div class="row">
             <div class="col-xs-5 col-sm-offset-7">
-                <div class="form-group" [ngClass]="{'has-error': !name.valid && (name.touched || lunchForm.submitted)}">
+                <div class="form-group" [ngClass]="{'has-error': ((!name.valid && name.touched) || (!name.valid && lunchForm.submitted)) && !loading}">
                     <label for="name">Ваше имя:</label>
-                    <input type="text" class="form-control" [disabled]="loading" id="name" name="name" placeholder="Введите ваше имя" [(ngModel)]="lunch.user.name"
-                        #name="ngModel" required>
-                    <small *ngIf='!name.valid && (name.touched || lunchForm.submitted)' class="text-danger text-center">
-                                Всё-таки введите ваше имя
-                         </small>
+                    <input type="text" class="form-control" [disabled]="loading"  name="name" placeholder="Введите ваше имя" [(ngModel)]="lunch.user.name"
+                        #name="ngModel" required minlength="5">
+                    <small *ngIf='((!name.valid && name.touched) || (!name.valid && lunchForm.submitted)) && !loading' class="text-danger text-center">
+                        <div *ngIf='name.errors != null'>
+                        <small *ngIf='name.errors["minlength"]' class="text-danger text-center">
+                            Имя должно быть длиннее
+                        </small>
+                        <small *ngIf='name.errors["required"]' class="text-danger text-center">
+                            Всё-таки введите ваше имя
+                        </small>
+                        </div>
+                    </small>
                 </div>
             </div>
 
@@ -35,26 +42,22 @@
         <div *ngFor="let section of lunch.sections">
             <div class="form-group">
                 <h4 [ngClass]="{'text-danger': !section.checked && lunchForm.submitted}">
-                    {{section.name}}    <b>section.checked: {{section.checked}} </b>
+                    {{section.name}}
                 </h4>
                 <ul>
                     <div *ngFor="let item of section.items">
                         <li>
                             <div class="checkbox">
-                                <label><input 
-                                                (change)="itemChecked($event, item, section)"  
-                                                [(ngModel)]='item.checked' 
-                                                [name] = "'lunchItem'+section.number+'_'+item.number" 
-                                                type="checkbox" 
-                                                [attr.disabled]="(!lunch.editable || loading)?'':null" value="">
-                                                 {{item.name}}  <b>item.checked: {{item.checked}} </b>
+                                <label>
+                                    <input (change)="itemChecked($event, item, section)" [(ngModel)]='item.checked' [name]="'lunchItem'+section.number+'_'+item.number"
+                                        type="checkbox" [attr.disabled]="(!lunch.editable || loading)?'':null" value=""> {{item.name}}
                                 </label>
                             </div>
                         </li>
                     </div>
                     <small *ngIf='!section.checked && lunchForm.submitted' class="text-danger text-center">
-                            Выберите один элемент
-                     </small>
+                        <small>Выберите один элемент</small>
+                    </small>
                 </ul>
             </div>
         </div>
@@ -65,8 +68,9 @@
                     <button type="submit" [disabled]="loading" class="btn btn-success btn-lg">Отправить</button>
                 </div>
                 <small *ngIf="loading">
-                        <i class="fa fa-spinner fa-spin"></i>
-                    </small>
+                    <i class="fa fa-spinner fa-spin"></i>
+                    <i>сохраняем...</i>
+                </small>
             </div>
 
         </div>

@@ -43,6 +43,12 @@ namespace Services
             var lunchId = userLunch.UserLunchId;
             model.UserLunchId = lunchId;
             UpdateLunchItems(model);
+            var menu = _context.Menus.FirstOrDefault(m => m.MenuId == model.MenuId);
+            if (menu != null)
+            {
+                menu.Editable = false;
+                _context.SaveChanges();
+            }
             return model;
         }
 

@@ -33,6 +33,10 @@ export class EditLunchComponent implements OnInit {
   }
 
   map(value: UserLunch) {
+    if (_.isUndefined(value.lunchDate)){
+      this.toastr.warning('Нет активных меню на сегодня...',null, {showCloseButton: true });
+      return;
+    }
     this.lunch = value;
     this.reindex();
     this.lunch.lunchDate = moment(value.lunchDate, vsDateFormat).format(vmDateFormat);
@@ -42,22 +46,26 @@ export class EditLunchComponent implements OnInit {
   save(lunchForm) {
     var sectionsSelected = _.every(this.lunch.sections, function (sec) {
       return sec.checked
-    })
+    });
     if (lunchForm.invalid || !sectionsSelected) return;
+    
     this.loading = true;
     let observer = this.userLunchService.updateLunch(this.lunch);
+  
     observer.subscribe(value => this.lunchUpdatedEvent(value), err => this.error(err));
   }
 
   error(err: any) {
     var er = err.json();
-    this.toastr.error(er.Message, 'Ошибка', { enableHTML: true, animate: 'flyRight', showCloseButton: true });
+    this.toastr.error(er.Message, 'Ошибка', {showCloseButton: true });
     this.loading = false;
   }
 
   lunchUpdatedEvent(r) {
-    this.toastr.success('Сохранено', null, { enableHTML: true, animate: 'flyRight', showCloseButton: true });
-    this.map(r);
+    this.toastr.success('Сохранено', null, {showCloseButton: true });
+    debugger;
+    //this.map(r);
+    this.reindex();
     this.loading = false;
   }
 

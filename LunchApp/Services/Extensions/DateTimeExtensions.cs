@@ -15,5 +15,16 @@ namespace Services.Extensions
             int daysToAdd = ((int)day - (int)start.DayOfWeek + 7) % 7;
             return start.AddDays(daysToAdd);
         }
+
+        public static DateTime ParseDate(this string dtString)
+        {
+            var fr = DateTime.Now.NextFriday();
+            if (string.IsNullOrWhiteSpace(dtString)) return fr;
+            if (DateTime.TryParse(dtString, out DateTime dateValue))
+                return dateValue;
+            else
+                return fr;
+        }
     }
+
 }

@@ -6,12 +6,12 @@ using ViewModels.Menu;
 namespace Web.Controllers
 {
     [Route("api/[controller]")]
-    public class MenusController : Controller
+    public class MenusController : BaseFoodController
     {
 
         private readonly IMenuService _menuService;
 
-        public MenusController(IMenuService menuService)
+        public MenusController(IMenuService menuService, IUserService userService) : base(userService)
         {
             _menuService = menuService;
         }

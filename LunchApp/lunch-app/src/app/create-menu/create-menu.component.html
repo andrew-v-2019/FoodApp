@@ -5,37 +5,40 @@
     <div class="row">
         <div class="col-xs-12">
             <h2 class="text-center">БИЗНЕС – ЛАНЧ на
-                <span *ngIf='menu.editable'>                    
-                    <input [disabled]="loading" [ngModel]="date | date:'yyyy-MM-dd'" 
-                    (ngModelChange)="date = $event"
-                    type="date" name="date" class="input-sm"/>                
+                <span *ngIf='menu.editable'>
+                    <input [disabled]="loading" [ngModel]="date | date:'yyyy-MM-dd'" (ngModelChange)="date = $event" type="date" name="date"
+                        class="input-sm" />
                 </span>
                 <span *ngIf='!menu.editable'>
-                        {{date.formatted}}
+                    {{dateFormatted}}
                 </span>
             </h2>
-            <h2 class="text-center">цена
-                <span *ngIf='menu.editable'>
+            <h2 class="text-center" *ngIf='menu.editable'>цена
                     <input class="input-sm" [disabled]="loading" min="1" max="999" type="number" [(ngModel)]='menu.price'>
-                </span>
-                <span *ngIf='!menu.editable'>
-                    <span>{{menu.price}}</span>
-                </span>рублей
+            </h2>
+            <h2 *ngIf='menu.price && !menu.editable' class="text-center">цена
+                    <span>
+                        <span>{{menu.price}}</span>
+                    </span>рублей
             </h2>
             <h3 class="text-center">Меню</h3>
         </div>
     </div>
 
-    <div class="row">
+    <div class="row" *ngIf='menu.editable'>
         <div class="col-xs-12 col-xs-offset-10">
             <div class="btn-group" dropdown>
                 <button dropdownToggle type="button" class="btn btn-default dropdown-toggle" [disabled]="loading">
-          Загрузить... <span class="caret"></span>
-        </button>
+                    Загрузить...
+                    <span class="caret"></span>
+                </button>
                 <ul *dropdownMenu class="dropdown-menu" role="menu">
-                    <li role="menuitem"><button class="dropdown-item btn btn-link" (click)="getTemplateMenu()">Загрузить из предыдущего</button></li>
+                    <li role="menuitem">
+                        <button class="dropdown-item btn btn-link" (click)="getTemplateMenu()">Загрузить из предыдущего</button>
+                    </li>
                     <li class="divider dropdown-divider"></li>
-                    <li role="menuitem"><button class="dropdown-item btn btn-link" href='#' (click)="getEmptyMenu()">Отчистить</button>
+                    <li role="menuitem">
+                        <button class="dropdown-item btn btn-link" href='#' (click)="getEmptyMenu()">Отчистить</button>
                     </li>
                 </ul>
             </div>
@@ -50,9 +53,10 @@
         <div class="form-group col-xs-12 col-xs-offset-10">
             <div class="input-group">
                 <button [disabled]="loading" class="btn btn-success btn-lg" (click)="save()">Отправить</button>
-                <small *ngIf="loading">
-                        <i class="fa fa-spinner fa-spin"></i>
-                    </small>
             </div>
+            <small *ngIf="loading">
+                <i class="fa fa-spinner fa-spin"></i>
+                <i>сохраняем...</i>
+            </small>
         </div>
     </div>

@@ -153,6 +153,7 @@ namespace Services
         public UpdateMenuViewModel UpdateMenu(UpdateMenuViewModel model)
         {
             Menu menu;
+            var lunchDate = model.LunchDate.ParseDate();
             if (model == null) return null;
             if (model.MenuId == 0)
             {
@@ -173,10 +174,11 @@ namespace Services
                 {
                     throw new Exception("Menu not found menuId = " + model.MenuId);
                 }
-                ;
-                menu.LunchDate = !string.IsNullOrWhiteSpace(model.LunchDate)
-                    ? DateTime.Parse(model.LunchDate)
-                    : DateTime.Now.NextFriday();
+                if (!menu.Editable)
+                {
+                    throw new Exception("Меню нельзя редактировать..");
+                }
+                menu.LunchDate = lunchDate;
                 menu.Price = model.Price;
                 menu.Editable = true;
             }
