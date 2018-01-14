@@ -31,7 +31,7 @@ namespace Web
         {
             services.AddDbContext<Context>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddScoped<Services.IFileService, Services.FileService>();
+            services.AddScoped<IFileService, FileService>();
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserLunchService, UserLunchService>();

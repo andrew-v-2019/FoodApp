@@ -4,6 +4,8 @@
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='andrewHome|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='andrewOffice|AnyCPU'" />
   <ItemGroup>
     <PackageReference Include="Bootstrap.Datepicker" Version="1.6.4" />
     <PackageReference Include="jquery.TypeScript.DefinitelyTyped" Version="3.1.2" />
