@@ -20,10 +20,7 @@ namespace Services.Extensions
         {
             var fr = DateTime.Now.NextFriday();
             if (string.IsNullOrWhiteSpace(dtString)) return fr;
-            if (DateTime.TryParse(dtString, out DateTime dateValue))
-                return dateValue;
-            else
-                return fr;
+            return DateTime.TryParse(dtString, out DateTime dateValue) ? dateValue : fr;
         }
     }
 

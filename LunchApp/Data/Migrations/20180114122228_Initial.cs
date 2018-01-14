@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Data.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -86,12 +86,43 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    OrderId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    CreationDate = table.Column<DateTime>(nullable: false),
+                    MenuId = table.Column<int>(nullable: false),
+                    OrderName = table.Column<string>(nullable: true),
+                    SubmitionDate = table.Column<DateTime>(nullable: true),
+                    Submitted = table.Column<bool>(nullable: false),
+                    SubmittedByUserId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.OrderId);
+                    table.ForeignKey(
+                        name: "FK_Orders_Menus_MenuId",
+                        column: x => x.MenuId,
+                        principalTable: "Menus",
+                        principalColumn: "MenuId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Users_SubmittedByUserId",
+                        column: x => x.SubmittedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserLunches",
                 columns: table => new
                 {
                     UserLunchId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CreationDate = table.Column<DateTime>(nullable: false),
+                    Editable = table.Column<bool>(nullable: false),
                     FilePath = table.Column<string>(nullable: true),
                     MenuId = table.Column<int>(nullable: false),
                     SubmitionDate = table.Column<DateTime>(nullable: false),
@@ -112,6 +143,32 @@ namespace Data.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderUserLunches",
+                columns: table => new
+                {
+                    OrderUserLunchId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    OrderId = table.Column<int>(nullable: false),
+                    UserLunchId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderUserLunches", x => x.OrderUserLunchId);
+                    table.ForeignKey(
+                        name: "FK_OrderUserLunches_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_OrderUserLunches_UserLunches_UserLunchId",
+                        column: x => x.UserLunchId,
+                        principalTable: "UserLunches",
+                        principalColumn: "UserLunchId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -153,6 +210,26 @@ namespace Data.Migrations
                 column: "MenuSectionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Orders_MenuId",
+                table: "Orders",
+                column: "MenuId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_SubmittedByUserId",
+                table: "Orders",
+                column: "SubmittedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderUserLunches_OrderId",
+                table: "OrderUserLunches",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderUserLunches_UserLunchId",
+                table: "OrderUserLunches",
+                column: "UserLunchId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserLunches_MenuId",
                 table: "UserLunches",
                 column: "MenuId");
@@ -176,7 +253,13 @@ namespace Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "OrderUserLunches");
+
+            migrationBuilder.DropTable(
                 name: "UserLunchItems");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "MenuItems");

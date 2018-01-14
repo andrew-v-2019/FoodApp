@@ -13,7 +13,7 @@ export class ManageOrdersComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.toastr.warning('В разработке...',null, {showCloseButton: true });
+    
   }
 
 }

@@ -14,7 +14,7 @@
                 </span>
             </h2>
             <h2 class="text-center" *ngIf='menu.editable'>цена
-                    <input class="input-sm" [disabled]="loading" min="1" max="999" type="number" [(ngModel)]='menu.price'>
+                    <input class="input-sm" [disabled]="loading" min="1" max="999" type="number" [(ngModel)]='menu.price'> рублей
             </h2>
             <h2 *ngIf='menu.price && !menu.editable' class="text-center">цена
                     <span>

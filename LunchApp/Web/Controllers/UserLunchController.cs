@@ -10,10 +10,12 @@ namespace Web.Controllers
     {
         private readonly IUserLunchService _userLunchService;
         private readonly IUserService _userService;
-        public UserLunchController(IUserService userService, IUserLunchService userLunchService) : base(userService)
+        private readonly IOrderService _orderService;
+        public UserLunchController(IUserService userService, IUserLunchService userLunchService, IOrderService orderService) : base(userService)
         {
             _userLunchService = userLunchService;
             _userService = userService;
+            _orderService = orderService;
         }
 
         [HttpGet("get")]
@@ -34,6 +36,7 @@ namespace Web.Controllers
                 var user = _userService.UpdateUser(model.User);
                 model.User = user;
                 var refreshedModel = _userLunchService.UpdateUserLunch(model);
+                _orderService.AddUserLunchToOrder(refreshedModel);
                 return Ok(refreshedModel);
             }
             catch (Exception e)

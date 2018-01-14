@@ -8,8 +8,8 @@ using Data.Models;
 namespace Data.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20180109154726_AddEditable")]
-    partial class AddEditable
+    [Migration("20180114122228_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -75,6 +75,50 @@ namespace Data.Migrations
                     b.HasKey("MenuSectionId");
 
                     b.ToTable("MenuSections");
+                });
+
+            modelBuilder.Entity("Data.Models.Order", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreationDate");
+
+                    b.Property<int>("MenuId");
+
+                    b.Property<string>("OrderName");
+
+                    b.Property<DateTime?>("SubmitionDate");
+
+                    b.Property<bool>("Submitted");
+
+                    b.Property<int?>("SubmittedByUserId");
+
+                    b.HasKey("OrderId");
+
+                    b.HasIndex("MenuId");
+
+                    b.HasIndex("SubmittedByUserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Data.Models.OrderUserLunch", b =>
+                {
+                    b.Property<int>("OrderUserLunchId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("OrderId");
+
+                    b.Property<int>("UserLunchId");
+
+                    b.HasKey("OrderUserLunchId");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("UserLunchId");
+
+                    b.ToTable("OrderUserLunches");
                 });
 
             modelBuilder.Entity("Data.Models.User", b =>
@@ -150,6 +194,28 @@ namespace Data.Migrations
                     b.HasOne("Data.Models.MenuSection", "MenuSection")
                         .WithMany()
                         .HasForeignKey("MenuSectionId");
+                });
+
+            modelBuilder.Entity("Data.Models.Order", b =>
+                {
+                    b.HasOne("Data.Models.Menu", "Menu")
+                        .WithMany()
+                        .HasForeignKey("MenuId");
+
+                    b.HasOne("Data.Models.User", "SubmittedByUser")
+                        .WithMany()
+                        .HasForeignKey("SubmittedByUserId");
+                });
+
+            modelBuilder.Entity("Data.Models.OrderUserLunch", b =>
+                {
+                    b.HasOne("Data.Models.Order", "Order")
+                        .WithMany("OrderUserLunches")
+                        .HasForeignKey("OrderId");
+
+                    b.HasOne("Data.Models.UserLunch", "UserLunch")
+                        .WithMany()
+                        .HasForeignKey("UserLunchId");
                 });
 
             modelBuilder.Entity("Data.Models.UserLunch", b =>

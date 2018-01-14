@@ -35,6 +35,7 @@ namespace Web
             services.AddScoped<IMenuService, MenuService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserLunchService, UserLunchService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddCors();
             services.AddMvc();
@@ -43,9 +44,7 @@ namespace Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            //loggerFactory.AddDebug();
-            Seed(app);
+            Context.Seed(app);
             if (env.IsDevelopment() || env.IsEnvironment("andrewOffice"))
             {
                 app.UseDeveloperExceptionPage();
@@ -69,28 +68,6 @@ namespace Web
             });
         }
 
-        public static void Seed(IApplicationBuilder app)
-        {
-            using (var context = app.ApplicationServices.GetRequiredService<Context>())
-            {
-                context.Database.Migrate();
-                var menuSections = new List<MenuSection>
-                {
-                    new MenuSection() {Name = "Салаты", Number = 1},
-                    new MenuSection() {Name = "Супы", Number = 2},
-                    new MenuSection() {Name = "Горячее ", Number = 3},
-                    new MenuSection() {Name = "Гарнир", Number = 4},
-                    new MenuSection() {Name = "Напитки", Number = 5}
-                };
-                foreach (var s in menuSections)
-                {
-                    if (!context.MenuSections.Any(x => x.Name.Equals(s.Name)))
-                    {
-                        context.Add(s);
-                    }
-                }
-                context.SaveChanges();
-            }
-        }
+    
     }
 }

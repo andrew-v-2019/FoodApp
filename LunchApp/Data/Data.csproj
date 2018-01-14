@@ -25,6 +25,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='andrewHome|AnyCPU'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='andrewOffice|AnyCPU'" />
   <ItemGroup>
+    <Compile Remove="Migrations\20180114115625_Initial.cs" />
+    <Compile Remove="Migrations\20180114115625_Initial.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="1.1.1" />
@@ -39,9 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 <ItemGroup>

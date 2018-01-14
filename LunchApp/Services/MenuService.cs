@@ -12,7 +12,7 @@ namespace Services
     public class MenuService: IMenuService
     {
         private readonly Context _context;
-        private const string DateFormat = "yyyy-MM-dd";
+        private readonly string _dateFormat = LocalizationStrings.DateFormat;
         public MenuService(Context context)
         {
             _context = context;
@@ -24,7 +24,7 @@ namespace Services
         {
             var model = new UpdateMenuViewModel
             {
-                LunchDate = DateTime.Now.NextFriday().ToString(DateFormat),
+                LunchDate = DateTime.Now.NextFriday().ToString(_dateFormat),
                 Editable = true,
                 Sections = _context.MenuSections.Select(s => new MenuSectionViewModel()
                 {
@@ -51,17 +51,23 @@ namespace Services
             template.MenuId = 0;
             template.Sections.ForEach(s => s.Items.ForEach(m => { m.MenuItemId = 0; }));
             template.Editable = true;
-            template.LunchDate = DateTime.Now.NextFriday().ToString(DateFormat);
+            template.LunchDate = DateTime.Now.NextFriday().ToString(_dateFormat);
             return template;
+        }
+
+        public Menu GetActiveMenu()
+        {
+            var lastMenu = _context.Menus.OrderByDescending(m => m.LunchDate).FirstOrDefault(m => m.Active == true);
+            return lastMenu;
         }
 
         public UpdateMenuViewModel GetLastMenu()
         {
-            var lastMenu = _context.Menus.OrderByDescending(m => m.LunchDate).FirstOrDefault();
+            var lastMenu = GetActiveMenu();
             if (lastMenu == null) return GetEmptyMenu();
             var model = new UpdateMenuViewModel()
             {
-                LunchDate = lastMenu.LunchDate.ToString(DateFormat),
+                LunchDate = lastMenu.LunchDate.ToString(_dateFormat),
                 MenuId = lastMenu.MenuId,
                 Price = lastMenu.Price,
                 Editable = lastMenu.Editable,
@@ -90,7 +96,7 @@ namespace Services
 
             var model = new UpdateMenuViewModel()
             {
-                LunchDate = DateTime.Now.ToString(DateFormat),
+                LunchDate = DateTime.Now.ToString(_dateFormat),
                 MenuId = 1,
                 Price = 1.1,
                 //Title = "Test",
@@ -150,20 +156,23 @@ namespace Services
         #endregion
 
         #region Update
+
         public UpdateMenuViewModel UpdateMenu(UpdateMenuViewModel model)
         {
             Menu menu;
             var lunchDate = model.LunchDate.ParseDate();
-            if (model == null) return null;
+            var name = string.Format(LocalizationStrings.MenuDefaultName,
+                lunchDate.ToString(LocalizationStrings.RusDateFormat));
             if (model.MenuId == 0)
             {
                 menu = new Menu
                 {
-                    LunchDate = DateTime.Parse(model.LunchDate),
+                    LunchDate = lunchDate,
                     CreationDate = DateTime.Now,
                     Price = model.Price,
                     Active = true,
-                    Editable = true
+                    Editable = true,
+                    Name = name
                 };
                 _context.Menus.Add(menu);
             }
@@ -172,15 +181,17 @@ namespace Services
                 menu = _context.Menus.FirstOrDefault(l => l.MenuId == model.MenuId);
                 if (menu == null)
                 {
-                    throw new Exception("Menu not found menuId = " + model.MenuId);
+                    var er = string.Format(LocalizationStrings.MenuNotFound, model.MenuId);
+                    throw new Exception(er);
                 }
                 if (!menu.Editable)
                 {
-                    throw new Exception("Меню нельзя редактировать..");
+                    throw new Exception(LocalizationStrings.MenuIsLocked);
                 }
                 menu.LunchDate = lunchDate;
                 menu.Price = model.Price;
                 menu.Editable = true;
+                menu.Name = name;
             }
             _context.SaveChanges();
             model.MenuId = menu.MenuId;

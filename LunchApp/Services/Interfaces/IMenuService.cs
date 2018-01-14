@@ -1,4 +1,4 @@
-﻿using ViewModels;
+﻿using Data.Models;
 using ViewModels.Menu;
 
 namespace Services.Interfaces
@@ -10,5 +10,6 @@ namespace Services.Interfaces
         UpdateMenuViewModel GetLastMenu();
         UpdateMenuViewModel GetFakeMenu();
         UpdateMenuViewModel GetLastMenuAsTemplate();
+        Menu GetActiveMenu();
     }
 }
