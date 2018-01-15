@@ -1,4 +1,5 @@
 ﻿using ViewModels.Order;
+using ViewModels.User;
 using ViewModels.UserLunch;
 
 namespace Services.Interfaces
@@ -8,5 +9,6 @@ namespace Services.Interfaces
         void AddUserLunchToOrder(UserLunchViewModel userLunch);
         OrderViewModel GetCurrentOrder();
         OrderViewModel UpdateOrder(OrderViewModel model);
+        OrderViewModel SubmitOrder(OrderViewModel model, UserViewModel currentUser);
     }
 }
