@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Resource, ResourceParams, ResourceAction, ResourceMethod } from 'ngx-resource';
 import { RequestMethod } from '@angular/http';
 import { environment } from 'environments/environment';
+import { Order } from 'app/models/order/order';
 
 
 @Injectable()
@@ -9,7 +10,16 @@ import { environment } from 'environments/environment';
     url: environment.apiEndpoint + '/orders/'
 })
 
-export class LunchResource extends Resource {
-    
+export class OrderResource extends Resource {
+    @ResourceAction({
+        path: ''
+    })
+    get: ResourceMethod<{}, Order>;
+
+    @ResourceAction({
+        method: RequestMethod.Post,
+        path: ''
+    })
+    update: ResourceMethod<Order, any>;
 }
 

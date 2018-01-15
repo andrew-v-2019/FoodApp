@@ -27,7 +27,7 @@
                     <small *ngIf='((!name.valid && name.touched) || (!name.valid && lunchForm.submitted)) && !loading' class="text-danger text-center">
                         <div *ngIf='name.errors != null'>
                         <small *ngIf='name.errors["minlength"]' class="text-danger text-center">
-                            Имя должно быть длиннее
+                            Имя должно быть длиннее 
                         </small>
                         <small *ngIf='name.errors["required"]' class="text-danger text-center">
                             Всё-таки введите ваше имя

@@ -181,7 +181,7 @@ namespace Services
         {
             var activeMenu = _menuService.GetActiveMenu();
             if (activeMenu == null) throw new Exception(LocalizationStrings.ActiveMenuDoesntNotExist);
-            var lunches = _context.UserLunches.Where(l => l.MenuId == activeMenu.MenuId).Select(l => l);
+            var lunches = _context.UserLunches.Where(l => l.MenuId == activeMenu.MenuId).Select(l => l).ToList();
             var list = new List<UserLunchViewModel>();
             foreach (var l in lunches)
             {

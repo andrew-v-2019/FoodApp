@@ -6,10 +6,9 @@ import { Moment } from "moment";
 import * as _ from "lodash";
 import { FormGroup, FormControl, FormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { Constants } from 'app/Constants';
 
 
-const vmDateFormat: string = "DD.MM.YYYY";
-const vsDateFormat: string = "YYYY-MM-DD";
 
 @Component({
   selector: 'app-edit-lunch',
@@ -33,13 +32,13 @@ export class EditLunchComponent implements OnInit {
   }
 
   map(value: UserLunch) {
-    if (_.isUndefined(value.lunchDate)){
-      this.toastr.warning('Нет активных меню на сегодня...',null, {showCloseButton: true });
+    if (_.isUndefined(value.lunchDate)) {
+      this.toastr.warning(Constants.NoActiveMeus, null, { showCloseButton: true });
       return;
     }
     this.lunch = value;
     this.reindex();
-    this.lunch.lunchDate = moment(value.lunchDate, vsDateFormat).format(vmDateFormat);
+    this.lunch.lunchDate = moment(value.lunchDate, Constants.vsDateFormat).format(Constants.vmDateFormat);
     this.loading = false;
   }
 
@@ -48,21 +47,21 @@ export class EditLunchComponent implements OnInit {
       return sec.checked
     });
     if (lunchForm.invalid || !sectionsSelected) return;
-    
+
     this.loading = true;
     let observer = this.userLunchService.updateLunch(this.lunch);
-  
+
     observer.subscribe(value => this.lunchUpdatedEvent(value), err => this.error(err));
   }
 
   error(err: any) {
     var er = err.json();
-    this.toastr.error(er.Message, 'Ошибка', {showCloseButton: true });
+    this.toastr.error(er.Message, Constants.errorTitle, { showCloseButton: true });
     this.loading = false;
   }
 
   lunchUpdatedEvent(r) {
-    this.toastr.success('Сохранено', null, {showCloseButton: true });
+    this.toastr.success(Constants.successTitle, null, { showCloseButton: true });
     this.reindex();
     this.loading = false;
   }

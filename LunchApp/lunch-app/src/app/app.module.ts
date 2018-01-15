@@ -15,6 +15,7 @@ import { NavComponent }  from './nav/nav.component';
 
 import { MenuService }  from './services/menu/menu.service';
 import { LunchService }  from './services/lunch/lunch.service';
+import { OrderService }  from './services/order/order.service';
 
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 
@@ -54,7 +55,7 @@ import {ToastModule} from 'ng2-toastr/ng2-toastr';
 	  NavComponent,
 	  SectionEditorComponent
   ],
-  providers: [ MenuService, LunchService ],
+  providers: [ MenuService, LunchService, OrderService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { } 

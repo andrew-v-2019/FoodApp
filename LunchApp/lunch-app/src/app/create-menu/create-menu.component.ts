@@ -6,10 +6,9 @@ import * as moment from 'moment';
 import { Moment } from "moment";
 import * as _ from "lodash";
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
+import { Constants } from 'app/Constants';
 
 
-const vmDateFormat: string = "DD.MM.YYYY";
-const vsDateFormat: string = "YYYY-MM-DD";
 
 
 @Component({
@@ -37,16 +36,16 @@ export class CreateMenuComponent implements OnInit {
 
   error(err: any) {
     var er = err.json();
-    this.toastr.error(er.Message, 'Ошибка', { showCloseButton: true });
+    this.toastr.error(er.Message, Constants.errorTitle, { showCloseButton: true });
     this.loading = false;
   }
 
   map(value: Menu) {
-    let momentObj = moment(value.lunchDate, vsDateFormat).toString();
+    let momentObj = moment(value.lunchDate, Constants.vsDateFormat).toString();
     this.date = new Date(momentObj);
     this.menu = value;
     this.loading = false;
-    this.dateFormatted = moment(value.lunchDate, vsDateFormat).format(vmDateFormat);
+    this.dateFormatted = moment(value.lunchDate, Constants.vsDateFormat).format(Constants.vmDateFormat);
   }
 
   getEmptyMenu() {
@@ -64,7 +63,7 @@ export class CreateMenuComponent implements OnInit {
   save() {
     let m = this.menu;
     if (!m) return;
-    let momentObj = moment(this.date, vsDateFormat).format(vsDateFormat);
+    let momentObj = moment(this.date, Constants.vsDateFormat).format(Constants.vsDateFormat);
     m.lunchDate = momentObj;
     var incorrectSection = _.find(m.sections, function (section) { return section.items.length && section.items[0].name.trim().length == 0 });
     if (incorrectSection) {
@@ -76,7 +75,7 @@ export class CreateMenuComponent implements OnInit {
   }
 
   menuUpdateEvent(r) {
-    this.toastr.success('Сохранено', null, { showCloseButton: true });
+    this.toastr.success(Constants.successTitle, null, { showCloseButton: true });
     this.loading = false;
   }
 }
