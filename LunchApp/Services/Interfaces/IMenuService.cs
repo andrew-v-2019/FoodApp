@@ -8,7 +8,6 @@ namespace Services.Interfaces
         UpdateMenuViewModel UpdateMenu(UpdateMenuViewModel model);
         UpdateMenuViewModel GetEmptyMenu();
         UpdateMenuViewModel GetLastMenu();
-        UpdateMenuViewModel GetFakeMenu();
         UpdateMenuViewModel GetLastMenuAsTemplate();
         Menu GetActiveMenu();
     }

@@ -9,7 +9,7 @@ using Services.Extensions;
 
 namespace Services
 {
-    public class MenuService: IMenuService
+    public class MenuService : IMenuService
     {
         private readonly Context _context;
         private readonly string _dateFormat = LocalizationStrings.DateFormat;
@@ -31,15 +31,18 @@ namespace Services
                     MenuSectionId = s.MenuSectionId,
                     Name = s.Name,
                     Number = s.Number,
-                    Items = new List<MenuItemViewModel>() { new MenuItemViewModel() {
-                        MenuId = 0,
-                        MenuItemId = 0,
-                        MenuSectionId = s.MenuSectionId,
-                        Name = string.Empty,
-                        Number =1
-                    }
-                   },
-                    
+                    Items = new List<MenuItemViewModel>()
+                    {
+                        new MenuItemViewModel()
+                        {
+                            MenuId = 0,
+                            MenuItemId = 0,
+                            MenuSectionId = s.MenuSectionId,
+                            Name = string.Empty,
+                            Number = 1
+                        }
+                    },
+
                 }).ToList()
             };
             return model;
@@ -57,7 +60,7 @@ namespace Services
 
         public Menu GetActiveMenu()
         {
-            var lastMenu = _context.Menus.OrderByDescending(m => m.LunchDate).FirstOrDefault(m => m.Active == true);
+            var lastMenu = _context.Menus.OrderByDescending(m => m.LunchDate).FirstOrDefault(m => m.Active);
             return lastMenu;
         }
 
@@ -81,75 +84,13 @@ namespace Services
                         .Where(i => i.MenuId == lastMenu.MenuId && i.MenuSectionId == s.MenuSectionId).Select(
                             i => new MenuItemViewModel()
                             {
-                                 MenuSectionId = s.MenuSectionId,
-                                 Number = i.Number,
-                                 Name = i.Name,
-                                 MenuItemId = i.MenuItemId
+                                MenuSectionId = s.MenuSectionId,
+                                Number = i.Number,
+                                Name = i.Name,
+                                MenuItemId = i.MenuItemId
                             }).ToList()
                 }).ToList()
             };
-            return model;
-        }
-
-        public UpdateMenuViewModel GetFakeMenu()
-        {
-
-            var model = new UpdateMenuViewModel()
-            {
-                LunchDate = DateTime.Now.ToString(_dateFormat),
-                MenuId = 1,
-                Price = 1.1,
-                //Title = "Test",
-                Sections = new List<MenuSectionViewModel>()
-            };
-
-            model.Sections.Add(new MenuSectionViewModel()
-            {
-                MenuId = 1,
-                MenuSectionId = 1,
-                Name = "Салаты",
-                Number = 1,
-                Items = new List<MenuItemViewModel>()
-            });
-            model.Sections.Add(new MenuSectionViewModel()
-            {
-                MenuId = 1,
-                MenuSectionId = 2,
-                Name = "Супы",
-                Number = 2,
-                Items = new List<MenuItemViewModel>()
-            });
-            model.Sections.Add(new MenuSectionViewModel()
-            {
-                MenuId = 1,
-                MenuSectionId = 3,
-                Name = "Горячее",
-                Number = 3,
-                Items = new List<MenuItemViewModel>()
-            });
-            model.Sections.Add(new MenuSectionViewModel()
-            {
-                MenuId = 1,
-                MenuSectionId = 4,
-                Name = "Гарнир",
-                Number = 4,
-                Items = new List<MenuItemViewModel>()
-            });
-            model.Sections.Add(new MenuSectionViewModel()
-            {
-                MenuId = 1,
-                MenuSectionId = 5,
-                Name = "Напитки",
-                Number = 5,
-                Items = new List<MenuItemViewModel>()
-            });
-            model.Sections[0].Items.Add(new MenuItemViewModel()
-            {
-                MenuSectionId = 1,
-                Number = 1,
-                Name = "Test",
-                MenuItemId = 1
-            });
             return model;
         }
 
@@ -159,11 +100,11 @@ namespace Services
 
         public UpdateMenuViewModel UpdateMenu(UpdateMenuViewModel model)
         {
-            Menu menu;
             var lunchDate = model.LunchDate.ParseDate();
             var name = string.Format(LocalizationStrings.MenuDefaultName,
                 lunchDate.ToString(LocalizationStrings.RusDateFormat));
-            if (model.MenuId == 0)
+            var menu = _context.Menus.FirstOrDefault(l => l.MenuId == model.MenuId);
+            if (menu == null)
             {
                 menu = new Menu
                 {
@@ -178,12 +119,6 @@ namespace Services
             }
             else
             {
-                menu = _context.Menus.FirstOrDefault(l => l.MenuId == model.MenuId);
-                if (menu == null)
-                {
-                    var er = string.Format(LocalizationStrings.MenuNotFound, model.MenuId);
-                    throw new Exception(er);
-                }
                 if (!menu.Editable)
                 {
                     throw new Exception(LocalizationStrings.MenuIsLocked);

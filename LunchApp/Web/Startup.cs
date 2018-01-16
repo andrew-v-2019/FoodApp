@@ -44,7 +44,11 @@ namespace Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-            Context.Seed(app);
+
+            var context = app.ApplicationServices.GetRequiredService<Context>();
+            Context.Migrate(context);
+            Context.Seed(context);
+
             if (env.IsDevelopment() || env.IsEnvironment("andrewOffice"))
             {
                 app.UseDeveloperExceptionPage();

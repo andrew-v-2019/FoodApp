@@ -50,12 +50,9 @@ namespace Data.Models
             base.OnModelCreating(modelbuilder);
         }
 
-        public static void Seed(IApplicationBuilder app)
+        public static void Seed(Context context)
         {
-            using (var context = app.ApplicationServices.GetRequiredService<Context>())
-            {
-                context.Database.Migrate();
-                var menuSections = new List<MenuSection>
+            var menuSections = new List<MenuSection>
                 {
                     new MenuSection() {Name = "Салаты", Number = 1},
                     new MenuSection() {Name = "Супы", Number = 2},
@@ -63,15 +60,19 @@ namespace Data.Models
                     new MenuSection() {Name = "Гарнир", Number = 4},
                     new MenuSection() {Name = "Напитки", Number = 5}
                 };
-                foreach (var s in menuSections)
+            foreach (var s in menuSections)
+            {
+                if (!context.MenuSections.Any(x => x.Name.Equals(s.Name)))
                 {
-                    if (!context.MenuSections.Any(x => x.Name.Equals(s.Name)))
-                    {
-                        context.Add(s);
-                    }
+                    context.Add(s);
                 }
-                context.SaveChanges();
             }
+            context.SaveChanges();
+        }
+
+        public static void Migrate(Context context)
+        {
+            context.Database.Migrate();
         }
     }
 }
