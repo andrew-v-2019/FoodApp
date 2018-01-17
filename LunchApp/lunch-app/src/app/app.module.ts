@@ -25,9 +25,9 @@ import { SectionEditorComponent } from './components/section-editor/section-edit
 
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import {ResourceModule} from 'ngx-resource';
-
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ToastModule} from 'ng2-toastr/ng2-toastr';
+import { UserLunchShortListComponent } from 'app/components/user-lunch-short-list/user-lunch-short-list.component';
 
 
 
@@ -53,7 +53,8 @@ import {ToastModule} from 'ng2-toastr/ng2-toastr';
 	  EditLunchComponent,
 	  ManageOrdersComponent,
 	  NavComponent,
-	  SectionEditorComponent
+	  SectionEditorComponent,
+	  UserLunchShortListComponent
   ],
   providers: [ MenuService, LunchService, OrderService ],
   bootstrap: [ AppComponent ]

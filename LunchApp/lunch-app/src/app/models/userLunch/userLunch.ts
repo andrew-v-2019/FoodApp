@@ -9,4 +9,5 @@ export class UserLunch {
     lunchDate:string;
     price: number;
     editable: boolean;
+    selectedForOrder: boolean;
  }

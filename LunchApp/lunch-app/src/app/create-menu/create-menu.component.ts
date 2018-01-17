@@ -7,6 +7,7 @@ import { Moment } from "moment";
 import * as _ from "lodash";
 import { ToastsManager } from 'ng2-toastr/ng2-toastr';
 import { Constants } from 'app/Constants';
+import { MenuItem } from 'app/models/menu/menu-item';
 
 
 
@@ -31,7 +32,7 @@ export class CreateMenuComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     let observer = this.menuService.getLastMenu();
-    observer.subscribe(value => this.map(value), err => this.error(err));
+    observer.subscribe(value => this.map(value, value.menuId), err => this.error(err));
   }
 
   error(err: any) {
@@ -40,24 +41,29 @@ export class CreateMenuComponent implements OnInit {
     this.loading = false;
   }
 
-  map(value: Menu) {
+  map(value: Menu, currentMenuId: number) {
     let momentObj = moment(value.lunchDate, Constants.vsDateFormat).toString();
     this.date = new Date(momentObj);
     this.menu = value;
+    this.menu.menuId = currentMenuId;
     this.loading = false;
     this.dateFormatted = moment(value.lunchDate, Constants.vsDateFormat).format(Constants.vmDateFormat);
   }
 
   getEmptyMenu() {
-    this.menu = null;
-    let observer = this.menuService.getEmptyMenu();
-    observer.subscribe(value => this.map(value));
+    var m = this.menu;
+    _.each(this.menu.sections, function (section) {
+      section.items = [];
+      var menuItem = new MenuItem(m.menuId, section.menuSectionId);
+      section.items.push(menuItem);
+    });
   }
 
   getTemplateMenu() {
+    var curMenuId = this.menu.menuId;
     this.menu = null;
     let observer = this.menuService.getTemplateMenu();
-    observer.subscribe(value => this.map(value));
+    observer.subscribe(value => this.map(value, curMenuId));
   }
 
   save() {

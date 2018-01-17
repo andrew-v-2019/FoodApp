@@ -1,3 +1,38 @@
-<h1>
-    В разработке...
-</h1>
+<div *ngIf="!order" class="text-center">
+    <i class="fa fa-cog fa-spin fa-2x"></i>
+</div>
+
+<div *ngIf="order" class="row">
+    <div class="col-md-6">
+        <div class="row">
+            <div class="form-group">
+                <label for="orderName">Заказ</label>
+                <input type="text" #name="ngModel" class="form-control form-control-lg" id="orderName" placeholder="Имя заказа" [(ngModel)]="order.orderName">
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Пользователь</th>
+                        <th>Меню</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let lunch of order.userLunches">
+                        <td>
+                            <input [(ngModel)]='lunch.selectedForOrder' [name]="lunch.userLunchId" type="checkbox">
+                        </td>
+                        <td>{{lunch.user.name}}</td>
+                        <td><la-user-lunch-short-list [lunch]="lunch"></la-user-lunch-short-list></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row text-right">
+            <button class="btn btn-default">Сохранить</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</div>

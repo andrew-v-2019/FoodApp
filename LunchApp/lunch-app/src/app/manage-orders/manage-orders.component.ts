@@ -24,6 +24,7 @@ export class ManageOrdersComponent implements OnInit {
   }
 
   map(value: Order) {
+    this.order = value;
     this.loading = false;
     debugger;
   }

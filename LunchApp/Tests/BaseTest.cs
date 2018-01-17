@@ -17,13 +17,19 @@ namespace Tests
         protected Context TestContext;
         protected readonly string DateFormat = LocalizationStrings.DateFormat;
 
-        public BaseTest()
+        [OneTimeSetUp]
+        public void CreateTestData()
         {
             CreateDatabse();
         }
 
-        [OneTimeSetUp]
-        public void CreateDatabse()
+        [OneTimeTearDown]
+        public void ClearTestDate()
+        {
+            ClearTestDatabase();
+        }
+
+        private void CreateDatabse()
         {
             var options = new DbContextOptionsBuilder();
             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -32,5 +38,19 @@ namespace Tests
             Context.Migrate(TestContext);
             Context.Seed(TestContext);
         }
+
+        private void ClearTestDatabase()
+        {
+            TestContext.OrderUserLunches.RemoveRange(TestContext.OrderUserLunches);
+            TestContext.Orders.RemoveRange(TestContext.Orders);
+            TestContext.UserLunchItems.RemoveRange(TestContext.UserLunchItems);
+            TestContext.UserLunches.RemoveRange(TestContext.UserLunches);
+            TestContext.MenuItems.RemoveRange(TestContext.MenuItems);
+            TestContext.Menus.RemoveRange(TestContext.Menus);
+            TestContext.Users.RemoveRange(TestContext.Users);
+            TestContext.SaveChanges();
+        }
     }
+
+
 }

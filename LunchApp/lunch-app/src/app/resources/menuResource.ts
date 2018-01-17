@@ -16,11 +16,6 @@ export class MenuResource extends Resource {
     getLast: ResourceMethod<{}, Menu>;
 
     @ResourceAction({
-        path: 'empty'
-    })
-    getEmpty: ResourceMethod<{}, Menu>;
-
-    @ResourceAction({
         path: 'template'
     })
     getTemplate: ResourceMethod<{}, Menu>;

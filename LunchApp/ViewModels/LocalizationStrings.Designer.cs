@@ -88,6 +88,15 @@ namespace ViewModels {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Меню на эту дату уже создано.
+        /// </summary>
+        public static string MenuForThisDateExists {
+            get {
+                return ResourceManager.GetString("MenuForThisDateExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Меню нельзя редактировать....
         /// </summary>
         public static string MenuIsLocked {

@@ -13,5 +13,6 @@ namespace ViewModels.UserLunch
         public int UserLunchId { get; set; }
         public List<UserLunchSectionViewModel> Sections { get; set; }
         public bool Editable { get; set; }
+        public bool SelectedForOrder { get; set; }
     }
 }

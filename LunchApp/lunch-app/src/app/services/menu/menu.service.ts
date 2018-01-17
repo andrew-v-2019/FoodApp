@@ -15,11 +15,6 @@ export class MenuService {
     return obs;
   }
 
-  getEmptyMenu(): Observable<Menu> {
-    var obs = this.menuResource.getEmpty().$observable;
-    return obs;
-  }
-
   getTemplateMenu(): Observable<Menu> {
     var obs = this.menuResource.getTemplate().$observable;
     return obs;

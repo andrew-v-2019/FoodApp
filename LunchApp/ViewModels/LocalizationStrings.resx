@@ -126,6 +126,9 @@
   <data name="MenuDefaultName" xml:space="preserve">
     <value>БИЗНЕС – ЛАНЧ на {0}</value>
   </data>
+  <data name="MenuForThisDateExists" xml:space="preserve">
+    <value>Меню на эту дату уже создано</value>
+  </data>
   <data name="MenuIsLocked" xml:space="preserve">
     <value>Меню нельзя редактировать...</value>
   </data>

@@ -16,15 +16,6 @@ namespace Web.Controllers
             _menuService = menuService;
         }
 
-        [HttpGet("empty")]
-        public IActionResult GetEmpty()
-        {
-            var model = _menuService.GetEmptyMenu();
-            //var model = _menuService.GetFakeMenu();
-            return Ok(model);
-        }
-
-
         [HttpGet("last")]
         public IActionResult GetLast()
         {
@@ -60,7 +51,5 @@ namespace Web.Controllers
             }
 
         }
-
-
     }
 }

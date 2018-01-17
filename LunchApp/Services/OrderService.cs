@@ -68,12 +68,20 @@ namespace Services
                 model.OrderId = 0;
                 model.OrderName = lastMenu.Name;
                 model.Submitted = false;
+                foreach (var l in model.UserLunches)
+                {
+                    l.SelectedForOrder = true;
+                }
                 return model;
             }
             model.Submitted = order.Submitted;
             model.OrderId = order.OrderId;
             model.OrderName = order.OrderName;
             model.MenuId = order.MenuId;
+            foreach (var l in model.UserLunches)
+            {
+                l.SelectedForOrder = true;
+            }
             return model;
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Data.Models;
 using Services.Interfaces;
@@ -20,7 +21,7 @@ namespace Services
 
         #region Get
 
-        public UpdateMenuViewModel GetEmptyMenu()
+        private UpdateMenuViewModel GetEmptyMenu()
         {
             var model = new UpdateMenuViewModel
             {
@@ -60,7 +61,9 @@ namespace Services
 
         public Menu GetActiveMenu()
         {
-            var lastMenu = _context.Menus.OrderByDescending(m => m.LunchDate).FirstOrDefault(m => m.Active);
+            var lastMenu = _context.Menus.OrderByDescending(m => m.LunchDate)
+                .ThenByDescending(m => m.CreationDate)
+                .FirstOrDefault(m => m.Active);
             return lastMenu;
         }
 
@@ -101,6 +104,11 @@ namespace Services
         public UpdateMenuViewModel UpdateMenu(UpdateMenuViewModel model)
         {
             var lunchDate = model.LunchDate.ParseDate();
+            var anyForThisDate = _context.Menus.Any(m => m.LunchDate.Date == lunchDate && m.MenuId != model.MenuId);
+            if (anyForThisDate)
+            {
+                throw new Exception(LocalizationStrings.MenuForThisDateExists);
+            }
             var name = string.Format(LocalizationStrings.MenuDefaultName,
                 lunchDate.ToString(LocalizationStrings.RusDateFormat));
             var menu = _context.Menus.FirstOrDefault(l => l.MenuId == model.MenuId);
@@ -145,6 +153,16 @@ namespace Services
             return model;
         }
 
+        private void RemoveExceedMenuItems(MenuSectionViewModel model)
+        {
+            var vmIds = model.Items.Select(x => x.MenuItemId);
+            var dbIds = _context.MenuItems.Where(x => x.MenuSectionId == model.MenuSectionId &&
+                                                      x.MenuId == model.MenuId)
+                .Select(x => x.MenuItemId);
+            var idsToBurn = dbIds.Where(x => !vmIds.Contains(x));
+            _context.MenuItems.RemoveRange(_context.MenuItems.Where(x => idsToBurn.Contains(x.MenuItemId)));
+        }
+
         private int UpdateMenuSection(MenuSectionViewModel model)
         {
             MenuSection menuSection;
@@ -153,7 +171,7 @@ namespace Services
                 menuSection = new MenuSection
                 {
                     Name = model.Name,
-                    Number = model.Number
+                    Number = model.Number,
                 };
                 _context.MenuSections.Add(menuSection);
             }
@@ -166,10 +184,12 @@ namespace Services
             }
             _context.SaveChanges();
             model.MenuSectionId = menuSection.MenuSectionId;
+            RemoveExceedMenuItems(model);
             foreach (var menuItem in model.Items)
             {
                 menuItem.MenuSectionId = model.MenuSectionId;
                 menuItem.MenuId = model.MenuId;
+              
                 var id = UpdateMenuItem(menuItem);
                 menuItem.MenuItemId = id;
             }
