@@ -58,29 +58,25 @@ namespace Services
 
         public OrderViewModel GetCurrentOrder()
         {
-            var order = _context.Orders.OrderByDescending(x => x.CreationDate).FirstOrDefault(o => o.Submitted == false);
+            var menu = _menuService.GetActiveMenu() ?? _menuService.GetLastMenu();
+            if (menu == null) throw new Exception(LocalizationStrings.ActiveMenuDoesntNotExist);
+            var order = _context.Orders.OrderByDescending(x => x.CreationDate)
+                .FirstOrDefault(o => o.MenuId == menu.MenuId);
             var model = new OrderViewModel { UserLunches = _userLunchService.GetCurrentLunches() };
             if (order == null)
             {
-                var lastMenu = _menuService.GetActiveMenu();
-                if (lastMenu == null) throw new Exception(LocalizationStrings.ActiveMenuDoesntNotExist);
-                model.MenuId = lastMenu.MenuId;
+                model.MenuId = menu.MenuId;
                 model.OrderId = 0;
-                model.OrderName = lastMenu.Name;
+                model.OrderName = menu.Name;
                 model.Submitted = false;
-                foreach (var l in model.UserLunches)
-                {
-                    l.SelectedForOrder = true;
-                }
-                return model;
             }
-            model.Submitted = order.Submitted;
-            model.OrderId = order.OrderId;
-            model.OrderName = order.OrderName;
-            model.MenuId = order.MenuId;
-            foreach (var l in model.UserLunches)
+            else
             {
-                l.SelectedForOrder = true;
+                model.Submitted = order.Submitted;
+                model.OrderId = order.OrderId;
+                model.OrderName = order.OrderName;
+                model.SubmitionDate = order.SubmitionDate?.ToString(LocalizationStrings.RusDateFormat) ?? string.Empty;
+                model.MenuId = order.MenuId;
             }
             return model;
         }
@@ -88,9 +84,11 @@ namespace Services
         public OrderViewModel UpdateOrder(OrderViewModel model)
         {
             var order = GetOrCreateOrder(model.MenuId);
-            order.OrderName = order.OrderName;
+            order.OrderName = string.IsNullOrWhiteSpace(model.OrderName) ? order.OrderName : model.OrderName;
             _context.SaveChanges();
-            _userLunchService.AdjustUserLunchesWithList(model.UserLunches, model.MenuId);
+            var selectedLunches = model.UserLunches.Where(l => l.SelectedForOrder).ToList();
+            _userLunchService.AdjustUserLunchesWithList(selectedLunches, model.MenuId);
+            model.UserLunches = selectedLunches;
             return model;
         }
 
@@ -99,6 +97,7 @@ namespace Services
             UpdateOrder(model);
             var order = GetOrCreateOrder(model.MenuId);
             order.SubmitionDate = DateTime.Now;
+
             order.Submitted = true;
             order.SubmittedByUserId = currentUser.Id;
             var idsToLock = model.UserLunches.Select(l => l.UserLunchId).ToList();
@@ -107,6 +106,9 @@ namespace Services
             //ToDo: Impelemet email stuff
 
             _context.SaveChanges();
+            _menuService.DisableMenu(model.MenuId);
+            model.Submitted = true;
+            model.SubmitionDate = order.SubmitionDate.Value.ToString(LocalizationStrings.RusDateFormat);
             return model;
         }
     }

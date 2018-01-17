@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Data.Models;
 using Services.Interfaces;
@@ -21,77 +20,85 @@ namespace Services
 
         #region Get
 
-        private UpdateMenuViewModel GetEmptyMenu()
-        {
-            var model = new UpdateMenuViewModel
-            {
-                LunchDate = DateTime.Now.NextFriday().ToString(_dateFormat),
-                Editable = true,
-                Sections = _context.MenuSections.Select(s => new MenuSectionViewModel()
-                {
-                    MenuSectionId = s.MenuSectionId,
-                    Name = s.Name,
-                    Number = s.Number,
-                    Items = new List<MenuItemViewModel>()
-                    {
-                        new MenuItemViewModel()
-                        {
-                            MenuId = 0,
-                            MenuItemId = 0,
-                            MenuSectionId = s.MenuSectionId,
-                            Name = string.Empty,
-                            Number = 1
-                        }
-                    },
-
-                }).ToList()
-            };
-            return model;
-        }
-
         public UpdateMenuViewModel GetLastMenuAsTemplate()
         {
-            var template = GetLastMenu();
+            var menu = GetLastMenu();
+            var template = GetViewModel(menu);
             template.MenuId = 0;
             template.Sections.ForEach(s => s.Items.ForEach(m => { m.MenuItemId = 0; }));
-            template.Editable = true;
             template.LunchDate = DateTime.Now.NextFriday().ToString(_dateFormat);
             return template;
         }
 
-        public Menu GetActiveMenu()
+        public UpdateMenuViewModel GetActiveMenuForEdit()
+        {
+            var menu = GetActiveMenu();
+            if (menu == null) return GetViewModel();
+            var model = GetViewModel(menu);
+            return model;
+        }
+
+        public Menu GetLastMenu()
         {
             var lastMenu = _context.Menus.OrderByDescending(m => m.LunchDate)
                 .ThenByDescending(m => m.CreationDate)
-                .FirstOrDefault(m => m.Active);
+                .FirstOrDefault();
             return lastMenu;
         }
 
-        public UpdateMenuViewModel GetLastMenu()
+        public Menu GetActiveMenu()
         {
-            var lastMenu = GetActiveMenu();
-            if (lastMenu == null) return GetEmptyMenu();
+            var activeMenu = _context.Menus.OrderByDescending(m => m.LunchDate)
+                .ThenByDescending(m => m.CreationDate)
+                .FirstOrDefault(m => m.Active);
+            return activeMenu;
+        }
+
+        public bool CheckIfOrderForMenuSubmitted(int menuId)
+        {
+            var any = _context.Orders.Any(o => o.MenuId == menuId && o.Submitted);
+            return any;
+        }
+
+        private UpdateMenuViewModel GetViewModel(Menu menu = null)
+        {
+            var menuId = menu?.MenuId ?? 0;
+            var price = menu != null ? menu.Price : 0;
+            var editable = !CheckIfOrderForMenuSubmitted(menuId);
+            var date = menu?.LunchDate.ToString(_dateFormat) ?? DateTime.Now.NextFriday().ToString(_dateFormat);
             var model = new UpdateMenuViewModel()
             {
-                LunchDate = lastMenu.LunchDate.ToString(_dateFormat),
-                MenuId = lastMenu.MenuId,
-                Price = lastMenu.Price,
-                Editable = lastMenu.Editable,
+                LunchDate = date,
+                MenuId = menuId,
+                Price = price,
+                Editable = editable,
                 Sections = _context.MenuSections.Select(s => new MenuSectionViewModel()
                 {
-                    MenuId = lastMenu.MenuId,
+                    MenuId = menuId,
                     Name = s.Name,
                     MenuSectionId = s.MenuSectionId,
                     Number = s.Number,
-                    Items = _context.MenuItems
-                        .Where(i => i.MenuId == lastMenu.MenuId && i.MenuSectionId == s.MenuSectionId).Select(
-                            i => new MenuItemViewModel()
+                    Items = menu != null
+                        ? _context.MenuItems
+                            .Where(i => i.MenuId == menuId && i.MenuSectionId == s.MenuSectionId).Select(
+                                i => new MenuItemViewModel()
+                                {
+                                    MenuSectionId = s.MenuSectionId,
+                                    Number = i.Number,
+                                    Name = i.Name,
+                                    MenuItemId = i.MenuItemId
+                                }).ToList()
+                        : new List<MenuItemViewModel>()
+                        {
+                            new MenuItemViewModel()
                             {
+                                MenuId = 0,
+                                MenuItemId = 0,
                                 MenuSectionId = s.MenuSectionId,
-                                Number = i.Number,
-                                Name = i.Name,
-                                MenuItemId = i.MenuItemId
-                            }).ToList()
+                                Name = string.Empty,
+                                Number = 1
+                            }
+                        }
                 }).ToList()
             };
             return model;
@@ -189,7 +196,7 @@ namespace Services
             {
                 menuItem.MenuSectionId = model.MenuSectionId;
                 menuItem.MenuId = model.MenuId;
-              
+
                 var id = UpdateMenuItem(menuItem);
                 menuItem.MenuItemId = id;
             }
@@ -220,6 +227,14 @@ namespace Services
             }
             _context.SaveChanges();
             return menuItem.MenuItemId;
+        }
+
+        public void DisableMenu(int menuId)
+        {
+            var menu = _context.Menus.FirstOrDefault(m => m.MenuId == menuId);
+            if (menu == null) return;
+            menu.Active = false;
+            _context.SaveChanges();
         }
 
         #endregion

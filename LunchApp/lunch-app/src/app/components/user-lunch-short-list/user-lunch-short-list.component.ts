@@ -12,9 +12,17 @@ export class UserLunchShortListComponent implements OnInit {
   @Input() lunch: UserLunch;
   @Input() expanded: boolean;
 
+
   constructor() { }
 
+  expaned: boolean;
+
   ngOnInit() {
+    this.expaned = false;
+  }
+
+  expand(){
+    this.expanded = !this.expanded;
   }
 
 }

@@ -135,6 +135,9 @@
   <data name="MenuNotFound" xml:space="preserve">
     <value>Меню не найдено MenuId = {0}</value>
   </data>
+  <data name="OrderHasBeenSent" xml:space="preserve">
+    <value>Заказ уже отправлен</value>
+  </data>
   <data name="RusDateFormat" xml:space="preserve">
     <value>dd.MM.yyyy</value>
   </data>

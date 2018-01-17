@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Data.Models;
 using NUnit.Framework;
 using Services;
 using Services.Extensions;
 using ViewModels;
-using ViewModels.Menu;
 
-namespace Tests
+
+namespace Tests.Menu
 {
     [TestFixture]
-    public class MenuTests : BaseTest
+    public class UpdateMenuTests : BaseMenuTests
     {
-
-
-
         [Test]
         public void UpdateMenu_WithNewItems_Test()
         {
@@ -159,56 +154,6 @@ namespace Tests
                     Assert.AreEqual(dbMenuSectionItem.Number, fakeMenuSectionItem.Number);
                 }
             }
-        }
-
-        private static void MessFakeMenu(UpdateMenuViewModel model)
-        {
-            model.Price = model.Price + new Random().Next(1, 2000);
-            foreach (var section in model.Sections)
-            {
-                foreach (var item in section.Items)
-                {
-                    item.Name = Guid.NewGuid().ToString();
-                }
-            }
-        }
-
-        private UpdateMenuViewModel GetFakeMenu(int menuId)
-        {
-            var sec = TestContext.MenuSections.ToList();
-            var model = new UpdateMenuViewModel
-            {
-                Editable = true,
-                Price = 10000,
-                MenuId = menuId,
-                Sections = new List<MenuSectionViewModel>(),
-                LunchDate = DateTime.Now.AddYears(1100).ToString(DateFormat)
-            };
-            foreach (var dbSection in sec)
-            {
-                var section = new MenuSectionViewModel()
-                {
-                    Number = dbSection.Number,
-                    Name = dbSection.Name,
-                    MenuSectionId = dbSection.MenuSectionId,
-                    MenuId = menuId,
-                    Items = new List<MenuItemViewModel>()
-                };
-                for (var i = 0; i < 100; i++)
-                {
-                    var item = new MenuItemViewModel()
-                    {
-                        MenuId = menuId,
-                        Number = i,
-                        Name = Guid.NewGuid().ToString(),
-                        MenuSectionId = section.MenuSectionId,
-                    };
-
-                    section.Items.Add(item);
-                }
-                model.Sections.Add(section);
-            }
-            return model;
         }
     }
 }

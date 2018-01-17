@@ -21,5 +21,11 @@ export class OrderResource extends Resource {
         path: ''
     })
     update: ResourceMethod<Order, any>;
+
+    @ResourceAction({
+        method: RequestMethod.Post,
+        path: 'submit'
+    })
+    submit: ResourceMethod<Order, any>;
 }
 

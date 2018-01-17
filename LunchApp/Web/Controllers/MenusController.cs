@@ -21,7 +21,7 @@ namespace Web.Controllers
         {
             try
             {
-                var model = _menuService.GetLastMenu();
+                var model = _menuService.GetActiveMenuForEdit();
                 return Ok(model);
             }
             catch (Exception e)

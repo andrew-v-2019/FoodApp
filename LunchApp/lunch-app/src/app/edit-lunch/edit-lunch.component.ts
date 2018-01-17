@@ -28,14 +28,10 @@ export class EditLunchComponent implements OnInit {
   ngOnInit() {
     this.loading = true;
     let observer = this.userLunchService.get();
-    observer.subscribe(value => this.map(value));
+    observer.subscribe(value => this.map(value), err => this.error(err));
   }
 
   map(value: UserLunch) {
-    if (_.isUndefined(value.lunchDate)) {
-      this.toastr.warning(Constants.NoActiveMeus, null, { showCloseButton: true });
-      return;
-    }
     this.lunch = value;
     this.reindex();
     this.lunch.lunchDate = moment(value.lunchDate, Constants.vsDateFormat).format(Constants.vmDateFormat);
@@ -47,10 +43,8 @@ export class EditLunchComponent implements OnInit {
       return sec.checked
     });
     if (lunchForm.invalid || !sectionsSelected) return;
-
     this.loading = true;
     let observer = this.userLunchService.updateLunch(this.lunch);
-
     observer.subscribe(value => this.lunchUpdatedEvent(value), err => this.error(err));
   }
 

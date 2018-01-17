@@ -20,4 +20,9 @@ export class OrderService {
         return obs;
     }
 
+    submit(order: Order): Observable<Order> {
+        var obs = this.orderResource.submit(order).$observable;
+        return obs;
+    }
+
 }

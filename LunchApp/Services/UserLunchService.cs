@@ -17,17 +17,16 @@ namespace Services
 
         public UserLunchService(Context context, IMenuService menuService)
         {
-            
+
             _context = context;
             _menuService = menuService;
         }
-
 
         #region update
 
         public void LockLunches(List<int> userLunchIds)
         {
-            var lunches = _context.UserLunches.Where(l => userLunchIds.Contains(l.UserLunchId)).Select(l=>l).ToList();
+            var lunches = _context.UserLunches.Where(l => userLunchIds.Contains(l.UserLunchId)).Select(l => l).ToList();
             foreach (var lunch in lunches)
             {
                 lunch.Editable = false;
@@ -45,6 +44,8 @@ namespace Services
             var iunchItemsToExclude = _context.UserLunchItems
                 .Where(i => lunchIdsToExclude.Contains(i.UserLunchId))
                 .ToList();
+            _context.OrderUserLunches.RemoveRange(
+                _context.OrderUserLunches.Where(x => lunchIdsToExclude.Contains(x.UserLunchId)));
             _context.UserLunchItems.RemoveRange(iunchItemsToExclude);
             _context.UserLunches.RemoveRange(
                 _context.UserLunches.Where(l => lunchIdsToExclude.Contains(l.UserLunchId)));
@@ -53,6 +54,10 @@ namespace Services
 
         public UserLunchViewModel UpdateUserLunch(UserLunchViewModel model)
         {
+            if (_menuService.CheckIfOrderForMenuSubmitted(model.MenuId))
+            {
+                throw new Exception(LocalizationStrings.OrderHasBeenSent);
+            }
             var newLunch = false;
             var userLunch = _context.UserLunches.FirstOrDefault(x => x.UserLunchId == model.UserLunchId);
             if (userLunch == null)
@@ -121,11 +126,16 @@ namespace Services
 
         #region Get
 
+
+
+
         private UserLunchViewModel GetCurrentLunch(Menu activeMenu, UserLunch lunch)
         {
+            var user = _context.Users.FirstOrDefault(u => u.Id == lunch.UserId);
+            var userName = user != null ? user.Name : string.Empty;
             var model = new UserLunchViewModel()
             {
-                Editable = lunch.Editable,
+                Editable = !_menuService.CheckIfOrderForMenuSubmitted(lunch.MenuId),
                 UserLunchId = lunch.UserLunchId,
                 MenuId = lunch.MenuId,
                 LunchDate = activeMenu.LunchDate.ToString(_dateFormat),
@@ -133,9 +143,7 @@ namespace Services
                 User = new ViewModels.User.UserViewModel()
                 {
                     Id = lunch.UserId,
-                    Name = _context.Users.FirstOrDefault(u => u.Id == lunch.UserId) != null
-                        ? _context.Users.FirstOrDefault(u => u.Id == lunch.UserId).Name
-                        : string.Empty
+                    Name = userName
                 },
                 Sections = _context.MenuSections.Select(s => new UserLunchSectionViewModel()
                 {
@@ -158,41 +166,41 @@ namespace Services
                             .ToList()
                 })
                     .OrderBy(s => s.Number)
-                    .ToList()
+                    .ToList(),
+                SelectedForOrder = true
             };
             return model;
         }
 
         public UserLunchViewModel GetCurrentLunch(int userId)
         {
-            var activeMenu = _menuService.GetActiveMenu();
-            if (activeMenu == null) return null;
-            var lunch = _context.UserLunches.FirstOrDefault(l => l.UserId == userId && l.MenuId == activeMenu.MenuId);
+            var menu = _menuService.GetActiveMenu() ?? _menuService.GetLastMenu();
+            if (menu == null) throw new Exception(LocalizationStrings.ActiveMenuDoesntNotExist);
+            var lunch = _context.UserLunches.FirstOrDefault(l => l.UserId == userId && l.MenuId == menu.MenuId);
             if (lunch == null)
             {
-                var newLunch = CreateNewLunch(activeMenu);
+                var newLunch = CreateNewLunch(menu);
                 return newLunch;
             }
-            var model = GetCurrentLunch(activeMenu, lunch);
+            var model = GetCurrentLunch(menu, lunch);
             return model;
         }
 
         public List<UserLunchViewModel> GetCurrentLunches()
         {
-            var activeMenu = _menuService.GetActiveMenu();
-            if (activeMenu == null) throw new Exception(LocalizationStrings.ActiveMenuDoesntNotExist);
-            var lunches = _context.UserLunches.Where(l => l.MenuId == activeMenu.MenuId).Select(l => l).ToList();
-            var list = new List<UserLunchViewModel>();
-            foreach (var l in lunches)
-            {
-                var lunchViewModel = GetCurrentLunch(activeMenu, l);
-                list.Add(lunchViewModel);
-            }
-            return list;
+            var menu = _menuService.GetActiveMenu() ?? _menuService.GetLastMenu();
+            if (menu == null) throw new Exception(LocalizationStrings.ActiveMenuDoesntNotExist);
+            var lunches = _context.UserLunches.Where(l => l.MenuId == menu.MenuId).Select(l => l).ToList();
+            var viewModels = lunches.Select(l => GetCurrentLunch(menu, l)).ToList();
+            return viewModels;
         }
 
         private UserLunchViewModel CreateNewLunch(Menu activeMenu)
         {
+            if (_menuService.CheckIfOrderForMenuSubmitted(activeMenu.MenuId))
+            {
+                throw new Exception(LocalizationStrings.OrderHasBeenSent);
+            }
             var sections = _context.MenuSections.Select(s => new UserLunchSectionViewModel()
             {
                 MenuSectionId = s.MenuSectionId,
@@ -220,10 +228,11 @@ namespace Services
                 Sections = sections,
                 Price = activeMenu.Price,
                 LunchDate = activeMenu.LunchDate.ToString(_dateFormat),
-                Editable = true,
+                Editable = !_menuService.CheckIfOrderForMenuSubmitted(activeMenu.MenuId)
             };
             return model;
         }
+
         #endregion
 
 

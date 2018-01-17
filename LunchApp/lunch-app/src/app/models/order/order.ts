@@ -6,4 +6,5 @@ export class Order {
     submitted: boolean;
     menuId: number;
     lunches: UserLunch[];
+    submitionDate: string;
 }

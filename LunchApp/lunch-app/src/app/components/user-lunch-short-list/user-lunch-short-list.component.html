@@ -1,5 +1,19 @@
-<ul class="list-inline">
-    <li *ngFor="let section of lunch.sections">
-        <small> {{section.name}}: {{section.items[0].name}} </small>
-    </li>
-</ul>
+<div *ngIf="!expanded">
+    <button class="btn-link" (click)="expand()"> <i>Показать...</i> </button>
+</div>
+<div *ngIf="expanded">
+    <button class="btn-link" (click)="expand()"> <i>Скрыть...</i> </button>
+</div>
+
+<div *ngIf="expanded">
+    <div class="row">
+        <ul>
+            <li *ngFor="let section of lunch.sections">
+                <i>{{section.name}}</i>
+                <ul>
+                    <li>{{section.items[0].name}}</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -115,6 +115,15 @@ namespace ViewModels {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Заказ уже отправлен.
+        /// </summary>
+        public static string OrderHasBeenSent {
+            get {
+                return ResourceManager.GetString("OrderHasBeenSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to dd.MM.yyyy.
         /// </summary>
         public static string RusDateFormat {

@@ -21,11 +21,17 @@ namespace Web.Controllers
         [HttpGet("get")]
         public IActionResult Get()
         {
-            var user = GetCurrentUser();
-            var userLunchModel = _userLunchService.GetCurrentLunch(user.Id);
-            if (userLunchModel == null) return new EmptyResult();
-            userLunchModel.User = user;
-            return Ok(userLunchModel);
+            try
+            {
+                var user = GetCurrentUser();
+                var userLunchModel = _userLunchService.GetCurrentLunch(user.Id);
+                userLunchModel.User = user;
+                return Ok(userLunchModel);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
 
         [HttpPost("update")]

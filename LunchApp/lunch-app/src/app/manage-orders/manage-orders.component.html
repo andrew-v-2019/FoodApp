@@ -4,11 +4,10 @@
 
 <div *ngIf="order" class="row">
     <div class="col-md-6">
-        <div class="row">
-            <div class="form-group">
-                <label for="orderName">Заказ</label>
-                <input type="text" #name="ngModel" class="form-control form-control-lg" id="orderName" placeholder="Имя заказа" [(ngModel)]="order.orderName">
-            </div>
+        <div class="form-group">
+            <label for="orderName">Заказ</label>
+            <input type="text" #name="ngModel" class="form-control form-control-lg" id="orderName" placeholder="Имя заказа" [(ngModel)]="order.orderName"
+                [disabled]="loading || order.submitted">
         </div>
         <div class="row">
             <table class="table table-striped">
@@ -22,17 +21,32 @@
                 <tbody>
                     <tr *ngFor="let lunch of order.userLunches">
                         <td>
-                            <input [(ngModel)]='lunch.selectedForOrder' [name]="lunch.userLunchId" type="checkbox">
+                            <input [(ngModel)]='lunch.selectedForOrder' [name]="lunch.userLunchId" type="checkbox" [disabled]="loading || order.submitted">
                         </td>
                         <td>{{lunch.user.name}}</td>
-                        <td><la-user-lunch-short-list [lunch]="lunch"></la-user-lunch-short-list></td>
+                        <td>
+                            <la-user-lunch-short-list [lunch]="lunch"></la-user-lunch-short-list>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="row text-right">
-            <button class="btn btn-default">Сохранить</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="row text-right" *ngIf="order.userLunches.length">
+            <div class="row" *ngIf="!order.submitted">
+                <button class="btn btn-default" [disabled]="loading || order.submitted" (click)="save()">Сохранить</button>
+                <button type="submit" class="btn btn-primary" [disabled]="loading || order.submitted" (click)="submit()">Submit</button>
+            </div>
+            <small *ngIf="loading" class="text-right">
+                    <i class="fa fa-spinner fa-spin"></i>
+                    <i>сохраняем...</i>
+                </small>
+        </div>
+        <div class="row text-left" *ngIf="!order.userLunches.length">
+            <i>пока нет данных для заказа...</i>
+        </div>
+
+        <div class="row text-left" *ngIf="order.submitted">
+            <i>Заказ отправлен {{order.submitionDate}}...</i>
         </div>
     </div>
 </div>
