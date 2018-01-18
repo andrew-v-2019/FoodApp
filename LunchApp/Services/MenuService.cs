@@ -25,6 +25,7 @@ namespace Services
             var menu = GetLastMenu();
             var template = GetViewModel(menu);
             template.MenuId = 0;
+            template.Editable = true;
             template.Sections.ForEach(s => s.Items.ForEach(m => { m.MenuItemId = 0; }));
             template.LunchDate = DateTime.Now.NextFriday().ToString(_dateFormat);
             return template;

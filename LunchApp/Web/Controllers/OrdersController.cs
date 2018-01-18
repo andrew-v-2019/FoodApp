@@ -9,10 +9,12 @@ namespace Web.Controllers
     public class OrdersController : BaseFoodController
     {
         private readonly IOrderService _orderService;
+        private readonly IConfigurationsProvider _configurationsProvider;
 
-        public OrdersController(IUserService userService, IOrderService orderService) : base(userService)
+        public OrdersController(IUserService userService, IOrderService orderService, IConfigurationsProvider configurationsProvider) : base(userService)
         {
             _orderService = orderService;
+            _configurationsProvider = configurationsProvider;
         }
 
 

@@ -14,11 +14,14 @@ namespace Services
         private readonly Context _context;
         private readonly IMenuService _menuService;
         private readonly IUserLunchService _userLunchService;
-        public OrderService(Context context, IMenuService menuService, IUserLunchService userLunchService)
+        private readonly IEmailService _emailService;
+
+        public OrderService(Context context, IMenuService menuService, IUserLunchService userLunchService, IEmailService emailService)
         {
             _context = context;
             _menuService = menuService;
             _userLunchService = userLunchService;
+            _emailService = emailService;
         }
 
         private Order GetOrCreateOrder(int menuId)
@@ -92,24 +95,41 @@ namespace Services
             return model;
         }
 
+        private bool SendOrder(OrderViewModel model)
+        {
+            
+        }
+
         public OrderViewModel SubmitOrder(OrderViewModel model, UserViewModel currentUser)
         {
-            UpdateOrder(model);
-            var order = GetOrCreateOrder(model.MenuId);
-            order.SubmitionDate = DateTime.Now;
+            using (var tr = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    UpdateOrder(model);
+                    var order = GetOrCreateOrder(model.MenuId);
+                    order.SubmitionDate = DateTime.Now;
 
-            order.Submitted = true;
-            order.SubmittedByUserId = currentUser.Id;
-            var idsToLock = model.UserLunches.Select(l => l.UserLunchId).ToList();
-            _userLunchService.LockLunches(idsToLock);
+                    order.Submitted = true;
+                    order.SubmittedByUserId = currentUser.Id;
+                    var idsToLock = model.UserLunches.Select(l => l.UserLunchId).ToList();
+                    _userLunchService.LockLunches(idsToLock);
 
-            //ToDo: Impelemet email stuff
+                    //ToDo: Impelemet email stuff
 
-            _context.SaveChanges();
-            _menuService.DisableMenu(model.MenuId);
-            model.Submitted = true;
-            model.SubmitionDate = order.SubmitionDate.Value.ToString(LocalizationStrings.RusDateFormat);
-            return model;
+                    _context.SaveChanges();
+                    _menuService.DisableMenu(model.MenuId);
+                    model.Submitted = true;
+                    model.SubmitionDate = order.SubmitionDate.Value.ToString(LocalizationStrings.RusDateFormat);
+                    tr.Commit();
+                    return model;
+                }
+                catch (Exception e)
+                {
+                    tr.Rollback();
+                    throw new Exception(e.Message);
+                }
+            }
         }
     }
 }

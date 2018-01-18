@@ -36,6 +36,8 @@ namespace Web
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserLunchService, UserLunchService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IConfigurationsProvider, ConfigurationsProvider>();
 
             services.AddCors();
             services.AddMvc();
@@ -72,6 +74,6 @@ namespace Web
             });
         }
 
-    
+
     }
 }
