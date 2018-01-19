@@ -9,10 +9,8 @@
     <div class="row">
         <ul>
             <li *ngFor="let section of lunch.sections">
-                <i>{{section.name}}</i>
-                <ul>
-                    <li>{{section.items[0].name}}</li>
-                </ul>
+                <span>{{section.name}}</span>
+                <p style="text-indent: 0.5em;">✔  {{section.items[0].name}}</p>
             </li>
         </ul>
     </div>

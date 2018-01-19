@@ -50,16 +50,11 @@ namespace Data.Models
             base.OnModelCreating(modelbuilder);
         }
 
+
+
         public static void Seed(Context context)
         {
-            var menuSections = new List<MenuSection>
-            {
-                new MenuSection() {Name = "Салаты", Number = 1},
-                new MenuSection() {Name = "Супы", Number = 2},
-                new MenuSection() {Name = "Горячее ", Number = 3},
-                new MenuSection() {Name = "Гарнир", Number = 4},
-                new MenuSection() {Name = "Напитки", Number = 5}
-            };
+            var menuSections = GetSections();
             foreach (var s in menuSections)
             {
                 if (!context.MenuSections.Any(x => x.Name.Equals(s.Name)))
@@ -73,7 +68,7 @@ namespace Data.Models
                 var configuration = new Configuration()
                 {
                     Value = сonfig.Value,
-                    Key = config.Key
+                    Key = сonfig.Key
                 };
                 context.Configurations.Add(configuration);
             }
@@ -94,6 +89,18 @@ namespace Data.Models
                 ["DeveloperEmails"] = "vlasovandrei87@yandex.ru",
             };
             return settings;
+        }
+
+        private static IEnumerable<MenuSection> GetSections()
+        {
+            return new List<MenuSection>
+            {
+                new MenuSection() {Name = "Салаты", Number = 1},
+                new MenuSection() {Name = "Супы", Number = 2},
+                new MenuSection() {Name = "Горячее ", Number = 3},
+                new MenuSection() {Name = "Гарнир", Number = 4},
+                new MenuSection() {Name = "Напитки", Number = 5}
+            };
         }
 
         public static void Migrate(Context context)

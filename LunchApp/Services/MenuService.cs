@@ -111,43 +111,56 @@ namespace Services
 
         public UpdateMenuViewModel UpdateMenu(UpdateMenuViewModel model)
         {
-            var lunchDate = model.LunchDate.ParseDate();
-            var anyForThisDate = _context.Menus.Any(m => m.LunchDate.Date == lunchDate && m.MenuId != model.MenuId);
-            if (anyForThisDate)
+            using (var tr = _context.Database.BeginTransaction())
             {
-                throw new Exception(LocalizationStrings.MenuForThisDateExists);
-            }
-            var name = string.Format(LocalizationStrings.MenuDefaultName,
-                lunchDate.ToString(LocalizationStrings.RusDateFormat));
-            var menu = _context.Menus.FirstOrDefault(l => l.MenuId == model.MenuId);
-            if (menu == null)
-            {
-                menu = new Menu
+                try
                 {
-                    LunchDate = lunchDate,
-                    CreationDate = DateTime.Now,
-                    Price = model.Price,
-                    Active = true,
-                    Editable = true,
-                    Name = name
-                };
-                _context.Menus.Add(menu);
-            }
-            else
-            {
-                if (!menu.Editable)
-                {
-                    throw new Exception(LocalizationStrings.MenuIsLocked);
+                    var lunchDate = model.LunchDate.ParseDate();
+                    var anyForThisDate =
+                        _context.Menus.Any(m => m.LunchDate.Date == lunchDate && m.MenuId != model.MenuId);
+                    if (anyForThisDate)
+                    {
+                        throw new Exception(LocalizationStrings.MenuForThisDateExists);
+                    }
+                    var name = string.Format(LocalizationStrings.MenuDefaultName,
+                        lunchDate.ToString(LocalizationStrings.RusDateFormat));
+                    var menu = _context.Menus.FirstOrDefault(l => l.MenuId == model.MenuId);
+                    if (menu == null)
+                    {
+                        menu = new Menu
+                        {
+                            LunchDate = lunchDate,
+                            CreationDate = DateTime.Now,
+                            Price = model.Price,
+                            Active = true,
+                            Editable = true,
+                            Name = name
+                        };
+                        _context.Menus.Add(menu);
+                    }
+                    else
+                    {
+                        if (!menu.Editable)
+                        {
+                            throw new Exception(LocalizationStrings.MenuIsLocked);
+                        }
+                        menu.LunchDate = lunchDate;
+                        menu.Price = model.Price;
+                        menu.Editable = true;
+                        menu.Name = name;
+                    }
+                    _context.SaveChanges();
+                    model.MenuId = menu.MenuId;
+                    model = UpdateMenuSections(model);
+                    tr.Commit();
+                    return model;
                 }
-                menu.LunchDate = lunchDate;
-                menu.Price = model.Price;
-                menu.Editable = true;
-                menu.Name = name;
+                catch (Exception e)
+                {
+                    tr.Rollback();
+                    throw new Exception(e.Message, e.InnerException);
+                }
             }
-            _context.SaveChanges();
-            model.MenuId = menu.MenuId;
-            model = UpdateMenuSections(model);
-            return model;
         }
 
         private UpdateMenuViewModel UpdateMenuSections(UpdateMenuViewModel model)

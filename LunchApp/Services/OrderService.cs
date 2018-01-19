@@ -15,15 +15,19 @@ namespace Services
         private readonly IMenuService _menuService;
         private readonly IUserLunchService _userLunchService;
         private readonly IEmailService _emailService;
+        private readonly IConfigurationsProvider _configurationsProvider;
 
-        public OrderService(Context context, IMenuService menuService, IUserLunchService userLunchService, IEmailService emailService)
+        public OrderService(Context context, IMenuService menuService, IUserLunchService userLunchService, IEmailService emailService, IConfigurationsProvider configurationsProvider)
         {
             _context = context;
             _menuService = menuService;
             _userLunchService = userLunchService;
             _emailService = emailService;
+            _configurationsProvider = configurationsProvider;
         }
 
+
+        #region get
         private Order GetOrCreateOrder(int menuId)
         {
             var any = _context.Orders.FirstOrDefault(o => o.MenuId == menuId);
@@ -43,20 +47,6 @@ namespace Services
                 _context.SaveChanges();
             }
             return any;
-        }
-
-        public void AddUserLunchToOrder(UserLunchViewModel userLunch)
-        {
-            var order = GetOrCreateOrder(userLunch.MenuId);
-            var userLunchOrder = _context.OrderUserLunches.FirstOrDefault(u => u.UserLunchId == userLunch.UserLunchId && u.OrderId == order.OrderId);
-            if (userLunchOrder != null) return;
-            userLunchOrder = new OrderUserLunch()
-            {
-                OrderId = order.OrderId,
-                UserLunchId = userLunch.UserLunchId
-            };
-            _context.OrderUserLunches.Add(userLunchOrder);
-            _context.SaveChanges();
         }
 
         public OrderViewModel GetCurrentOrder()
@@ -83,24 +73,71 @@ namespace Services
             }
             return model;
         }
+        #endregion
+
+
+        #region Update
+
+        public void AddUserLunchToOrder(UserLunchViewModel userLunch)
+        {
+            using (var tr = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var order = GetOrCreateOrder(userLunch.MenuId);
+                    var userLunchOrder =
+                        _context.OrderUserLunches.FirstOrDefault(
+                            u => u.UserLunchId == userLunch.UserLunchId && u.OrderId == order.OrderId);
+                    if (userLunchOrder != null) return;
+                    userLunchOrder = new OrderUserLunch()
+                    {
+                        OrderId = order.OrderId,
+                        UserLunchId = userLunch.UserLunchId
+                    };
+                    _context.OrderUserLunches.Add(userLunchOrder);
+                    _context.SaveChanges();
+                    tr.Commit();
+                }
+                catch (Exception e)
+                {
+                    tr.Rollback();
+                    throw new Exception(e.Message);
+                }
+            }
+        }
 
         public OrderViewModel UpdateOrder(OrderViewModel model)
         {
-            var order = GetOrCreateOrder(model.MenuId);
-            order.OrderName = string.IsNullOrWhiteSpace(model.OrderName) ? order.OrderName : model.OrderName;
-            _context.SaveChanges();
-            var selectedLunches = model.UserLunches.Where(l => l.SelectedForOrder).ToList();
-            _userLunchService.AdjustUserLunchesWithList(selectedLunches, model.MenuId);
-            model.UserLunches = selectedLunches;
-            return model;
+            using (var tr = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var order = GetOrCreateOrder(model.MenuId);
+                    order.OrderName = string.IsNullOrWhiteSpace(model.OrderName) ? order.OrderName : model.OrderName;
+                    _context.SaveChanges();
+                    var selectedLunches = model.UserLunches.Where(l => l.SelectedForOrder).ToList();
+                    _userLunchService.AdjustUserLunchesWithList(selectedLunches, model.MenuId);
+                    model.UserLunches = selectedLunches;
+                    tr.Commit();
+                    return model;
+                }
+                catch (Exception e)
+                {
+                    tr.Rollback();
+                    throw new Exception(e.Message);
+                }
+            }
         }
 
-        private bool SendOrder(OrderViewModel model)
+        private bool SendOrder(OrderViewModel model, string parsedBody)
         {
-            
+            var from = _configurationsProvider.GetFromEmail();
+            var to = _configurationsProvider.GetToEmails();
+            var r = _emailService.SendEmial(from, to, model.OrderName, parsedBody);
+            return r;
         }
 
-        public OrderViewModel SubmitOrder(OrderViewModel model, UserViewModel currentUser)
+        public OrderViewModel SubmitOrder(OrderViewModel model, UserViewModel currentUser, string emailBody)
         {
             using (var tr = _context.Database.BeginTransaction())
             {
@@ -115,12 +152,11 @@ namespace Services
                     var idsToLock = model.UserLunches.Select(l => l.UserLunchId).ToList();
                     _userLunchService.LockLunches(idsToLock);
 
-                    //ToDo: Impelemet email stuff
-
                     _context.SaveChanges();
                     _menuService.DisableMenu(model.MenuId);
                     model.Submitted = true;
                     model.SubmitionDate = order.SubmitionDate.Value.ToString(LocalizationStrings.RusDateFormat);
+                    SendOrder(model, emailBody);
                     tr.Commit();
                     return model;
                 }
@@ -131,5 +167,8 @@ namespace Services
                 }
             }
         }
+
+        #endregion
+
     }
 }

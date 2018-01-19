@@ -124,6 +124,15 @@ namespace ViewModels {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Views/OrderTemplate.cshtml.
+        /// </summary>
+        public static string PathToOrderEmailTemplate {
+            get {
+                return ResourceManager.GetString("PathToOrderEmailTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to dd.MM.yyyy.
         /// </summary>
         public static string RusDateFormat {

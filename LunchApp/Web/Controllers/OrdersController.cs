@@ -1,6 +1,11 @@
 ﻿using System;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using RazorEngine;
+using RazorEngine.Templating;
 using Services.Interfaces;
+using ViewModels;
 using ViewModels.Order;
 
 namespace Web.Controllers
@@ -9,12 +14,12 @@ namespace Web.Controllers
     public class OrdersController : BaseFoodController
     {
         private readonly IOrderService _orderService;
-        private readonly IConfigurationsProvider _configurationsProvider;
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public OrdersController(IUserService userService, IOrderService orderService, IConfigurationsProvider configurationsProvider) : base(userService)
+        public OrdersController(IUserService userService, IOrderService orderService, IHostingEnvironment hostingEnvironment) : base(userService)
         {
             _orderService = orderService;
-            _configurationsProvider = configurationsProvider;
+            _hostingEnvironment = hostingEnvironment;
         }
 
 
@@ -46,13 +51,22 @@ namespace Web.Controllers
             }
         }
 
+        private static string ParseOrderEmail(OrderViewModel model)
+        {
+            var templateFile = new FileInfo(LocalizationStrings.PathToOrderEmailTemplate);
+            var templateText = System.IO.File.ReadAllText(templateFile.FullName);
+            var renderedText = Engine.Razor.RunCompile(templateText, "someText", typeof(OrderViewModel), model);
+            return renderedText;
+        }
+
         [HttpPost("submit")]
         public IActionResult Submit([FromBody] OrderViewModel model)
         {
             try
             {
+                var parsedOrderEmail = ParseOrderEmail(model);
                 var user = GetCurrentUser();
-                var savedModel = _orderService.SubmitOrder(model, user);
+                var savedModel = _orderService.SubmitOrder(model, user, parsedOrderEmail);
                 return Ok(savedModel);
             }
             catch (Exception e)

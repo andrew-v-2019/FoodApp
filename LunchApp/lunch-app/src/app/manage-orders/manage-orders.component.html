@@ -3,7 +3,7 @@
 </div>
 
 <div *ngIf="order" class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="form-group">
             <label for="orderName">Заказ</label>
             <input type="text" #name="ngModel" class="form-control form-control-lg" id="orderName" placeholder="Имя заказа" [(ngModel)]="order.orderName"

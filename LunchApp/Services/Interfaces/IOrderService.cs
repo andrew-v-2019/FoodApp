@@ -9,6 +9,6 @@ namespace Services.Interfaces
         void AddUserLunchToOrder(UserLunchViewModel userLunch);
         OrderViewModel GetCurrentOrder();
         OrderViewModel UpdateOrder(OrderViewModel model);
-        OrderViewModel SubmitOrder(OrderViewModel model, UserViewModel currentUser);
+        OrderViewModel SubmitOrder(OrderViewModel model, UserViewModel currentUser, string emailBody);
     }
 }

@@ -54,37 +54,49 @@ namespace Services
 
         public UserLunchViewModel UpdateUserLunch(UserLunchViewModel model)
         {
-            if (_menuService.CheckIfOrderForMenuSubmitted(model.MenuId))
+            using (var tr = _context.Database.BeginTransaction())
             {
-                throw new Exception(LocalizationStrings.OrderHasBeenSent);
+                try
+                {
+                    if (_menuService.CheckIfOrderForMenuSubmitted(model.MenuId))
+                    {
+                        throw new Exception(LocalizationStrings.OrderHasBeenSent);
+                    }
+                    var newLunch = false;
+                    var userLunch = _context.UserLunches.FirstOrDefault(x => x.UserLunchId == model.UserLunchId);
+                    if (userLunch == null)
+                    {
+                        newLunch = true;
+                        userLunch = new UserLunch();
+                    }
+                    userLunch.MenuId = model.MenuId;
+                    userLunch.UserId = model.User.Id;
+                    userLunch.UserLunchId = model.UserLunchId;
+                    userLunch.Submitted = true;
+                    userLunch.Editable = true;
+                    userLunch.SubmitionDate = DateTime.Now;
+                    if (newLunch)
+                    {
+                        userLunch.CreationDate = DateTime.Now;
+                        _context.UserLunches.Add(userLunch);
+                        _context.SaveChanges();
+                    }
+                    var lunchId = userLunch.UserLunchId;
+                    model.UserLunchId = lunchId;
+                    UpdateLunchItems(model);
+                    var menu = _context.Menus.FirstOrDefault(m => m.MenuId == model.MenuId);
+                    if (menu == null) return model;
+                    menu.Editable = false;
+                    _context.SaveChanges();
+                    tr.Commit();
+                    return model;
+                }
+                catch (Exception e)
+                {
+                    tr.Rollback();
+                    throw new Exception(e.Message, e.InnerException);
+                }
             }
-            var newLunch = false;
-            var userLunch = _context.UserLunches.FirstOrDefault(x => x.UserLunchId == model.UserLunchId);
-            if (userLunch == null)
-            {
-                newLunch = true;
-                userLunch = new UserLunch();
-            }
-            userLunch.MenuId = model.MenuId;
-            userLunch.UserId = model.User.Id;
-            userLunch.UserLunchId = model.UserLunchId;
-            userLunch.Submitted = true;
-            userLunch.Editable = true;
-            userLunch.SubmitionDate = DateTime.Now;
-            if (newLunch)
-            {
-                userLunch.CreationDate = DateTime.Now;
-                _context.UserLunches.Add(userLunch);
-                _context.SaveChanges();
-            }
-            var lunchId = userLunch.UserLunchId;
-            model.UserLunchId = lunchId;
-            UpdateLunchItems(model);
-            var menu = _context.Menus.FirstOrDefault(m => m.MenuId == model.MenuId);
-            if (menu == null) return model;
-            menu.Editable = false;
-            _context.SaveChanges();
-            return model;
         }
 
         private UserLunchViewModel UpdateLunchItems(UserLunchViewModel model)

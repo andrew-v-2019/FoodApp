@@ -138,6 +138,9 @@
   <data name="OrderHasBeenSent" xml:space="preserve">
     <value>Заказ уже отправлен</value>
   </data>
+  <data name="PathToOrderEmailTemplate" xml:space="preserve">
+    <value>Views/OrderTemplate.cshtml</value>
+  </data>
   <data name="RusDateFormat" xml:space="preserve">
     <value>dd.MM.yyyy</value>
   </data>
