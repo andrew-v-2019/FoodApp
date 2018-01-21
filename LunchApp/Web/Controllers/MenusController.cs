@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using ViewModels.Menu;
+using Web.Validators;
 
 namespace Web.Controllers
 {
@@ -10,10 +11,12 @@ namespace Web.Controllers
     {
 
         private readonly IMenuService _menuService;
+        private readonly MenuValidator _validator;
 
-        public MenusController(IMenuService menuService, IUserService userService) : base(userService)
+        public MenusController(IMenuService menuService, IUserService userService, MenuValidator validator) : base(userService)
         {
             _menuService = menuService;
+            _validator = validator;
         }
 
         [HttpGet("last")]
@@ -42,6 +45,8 @@ namespace Web.Controllers
         {
             try
             {
+                var results = _validator.Validate(model);
+                if (!results.IsValid) throw new Exception(results.Errors[0].ErrorMessage);
                 var savedModel = _menuService.UpdateMenu(model);
                 return Ok(savedModel);
             }

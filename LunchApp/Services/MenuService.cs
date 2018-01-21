@@ -47,6 +47,12 @@ namespace Services
             return lastMenu;
         }
 
+        public bool MenuIsActive(int menuId)
+        {
+            var me = _context.Menus.FirstOrDefault(m => m.MenuId == menuId);
+            return me != null && me.Active;
+        }
+
         public Menu GetActiveMenu()
         {
             var activeMenu = _context.Menus.OrderByDescending(m => m.LunchDate)
@@ -61,11 +67,17 @@ namespace Services
             return any;
         }
 
+        public bool CheckIfMenuIsEditable(int menuId)
+        {
+            var any = _context.UserLunches.Any(x => x.MenuId == menuId && x.Submitted);
+            return !any;
+        }
+
         private UpdateMenuViewModel GetViewModel(Menu menu = null)
         {
             var menuId = menu?.MenuId ?? 0;
             var price = menu != null ? menu.Price : 0;
-            var editable = !CheckIfOrderForMenuSubmitted(menuId);
+            var editable = CheckIfMenuIsEditable(menuId);
             var date = menu?.LunchDate.ToString(_dateFormat) ?? DateTime.Now.NextFriday().ToString(_dateFormat);
             var model = new UpdateMenuViewModel()
             {
@@ -74,35 +86,46 @@ namespace Services
                 Price = price,
                 Editable = editable,
                 Sections = _context.MenuSections.Select(s => new MenuSectionViewModel()
-                {
-                    MenuId = menuId,
-                    Name = s.Name,
-                    MenuSectionId = s.MenuSectionId,
-                    Number = s.Number,
-                    Items = menu != null
-                        ? _context.MenuItems
-                            .Where(i => i.MenuId == menuId && i.MenuSectionId == s.MenuSectionId).Select(
-                                i => new MenuItemViewModel()
-                                {
-                                    MenuSectionId = s.MenuSectionId,
-                                    Number = i.Number,
-                                    Name = i.Name,
-                                    MenuItemId = i.MenuItemId
-                                }).ToList()
-                        : new List<MenuItemViewModel>()
-                        {
-                            new MenuItemViewModel()
+                    {
+                        MenuId = menuId,
+                        Name = s.Name,
+                        MenuSectionId = s.MenuSectionId,
+                        Number = s.Number,
+                        Items = menu != null
+                            ? _context.MenuItems
+                                .Where(i => i.MenuId == menuId && i.MenuSectionId == s.MenuSectionId)
+                                .Select(
+                                    i => new MenuItemViewModel()
+                                    {
+                                        MenuSectionId = s.MenuSectionId,
+                                        Number = i.Number,
+                                        Name = i.Name,
+                                        MenuItemId = i.MenuItemId,
+                                        MenuId = menuId
+                                    })
+                                .ToList()
+                            : new List<MenuItemViewModel>()
                             {
-                                MenuId = 0,
-                                MenuItemId = 0,
-                                MenuSectionId = s.MenuSectionId,
-                                Name = string.Empty,
-                                Number = 1
+                                new MenuItemViewModel()
+                                {
+                                    MenuId = 0,
+                                    MenuItemId = 0,
+                                    MenuSectionId = s.MenuSectionId,
+                                    Name = string.Empty,
+                                    Number = 1
+                                }
                             }
-                        }
-                }).ToList()
+                    })
+                    .ToList()
             };
             return model;
+        }
+
+        public bool MenuForDateExisits(DateTime lunchDate, int menuId)
+        {
+            var anyForThisDate =
+                _context.Menus.Any(m => m.LunchDate.Date == lunchDate && m.MenuId != menuId);
+            return anyForThisDate;
         }
 
         #endregion
@@ -116,12 +139,6 @@ namespace Services
                 try
                 {
                     var lunchDate = model.LunchDate.ParseDate();
-                    var anyForThisDate =
-                        _context.Menus.Any(m => m.LunchDate.Date == lunchDate && m.MenuId != model.MenuId);
-                    if (anyForThisDate)
-                    {
-                        throw new Exception(LocalizationStrings.MenuForThisDateExists);
-                    }
                     var name = string.Format(LocalizationStrings.MenuDefaultName,
                         lunchDate.ToString(LocalizationStrings.RusDateFormat));
                     var menu = _context.Menus.FirstOrDefault(l => l.MenuId == model.MenuId);
@@ -210,7 +227,6 @@ namespace Services
             {
                 menuItem.MenuSectionId = model.MenuSectionId;
                 menuItem.MenuId = model.MenuId;
-
                 var id = UpdateMenuItem(menuItem);
                 menuItem.MenuItemId = id;
             }

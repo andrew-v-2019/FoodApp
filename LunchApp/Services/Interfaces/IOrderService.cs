@@ -10,5 +10,6 @@ namespace Services.Interfaces
         OrderViewModel GetCurrentOrder();
         OrderViewModel UpdateOrder(OrderViewModel model);
         OrderViewModel SubmitOrder(OrderViewModel model, UserViewModel currentUser, string emailBody);
+        bool IsOrderSubmitted(int orderId);
     }
 }

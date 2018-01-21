@@ -70,11 +70,38 @@ namespace ViewModels {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Другое меню на эту дату создано.
+        /// </summary>
+        public static string AnotherMenuForDateExists {
+            get {
+                return ResourceManager.GetString("AnotherMenuForDateExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to yyyy-MM-dd.
         /// </summary>
         public static string DateFormat {
             get {
                 return ResourceManager.GetString("DateFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Нельзя создать меню в прошлом.
+        /// </summary>
+        public static string DateShouldBeInFuture {
+            get {
+                return ResourceManager.GetString("DateShouldBeInFuture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Меню должно иметь правильную структуру.
+        /// </summary>
+        public static string IncorrectSectionStructure {
+            get {
+                return ResourceManager.GetString("IncorrectSectionStructure", resourceCulture);
             }
         }
         
@@ -138,6 +165,15 @@ namespace ViewModels {
         public static string RusDateFormat {
             get {
                 return ResourceManager.GetString("RusDateFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Вы не ввели имя.
+        /// </summary>
+        public static string UserNameIsEmpty {
+            get {
+                return ResourceManager.GetString("UserNameIsEmpty", resourceCulture);
             }
         }
     }

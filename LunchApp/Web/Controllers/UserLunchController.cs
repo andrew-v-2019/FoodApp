@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using ViewModels.UserLunch;
+using Web.Validators;
 
 namespace Web.Controllers
 {
@@ -11,11 +12,15 @@ namespace Web.Controllers
         private readonly IUserLunchService _userLunchService;
         private readonly IUserService _userService;
         private readonly IOrderService _orderService;
-        public UserLunchController(IUserService userService, IUserLunchService userLunchService, IOrderService orderService) : base(userService)
+        private readonly UserLunchValidator _validator;
+
+        public UserLunchController(IUserService userService, IUserLunchService userLunchService,
+            IOrderService orderService, UserLunchValidator validator) : base(userService)
         {
             _userLunchService = userLunchService;
             _userService = userService;
             _orderService = orderService;
+            _validator = validator;
         }
 
         [HttpGet("get")]
@@ -39,6 +44,8 @@ namespace Web.Controllers
         {
             try
             {
+                var results = _validator.Validate(model);
+                if (!results.IsValid) throw new Exception(results.Errors[0].ErrorMessage);
                 var user = _userService.UpdateUser(model.User);
                 model.User = user;
                 var refreshedModel = _userLunchService.UpdateUserLunch(model);

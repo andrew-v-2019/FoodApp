@@ -63,7 +63,7 @@ namespace Tests.Menu
 
 
         [Test]
-        public void UpdateMenu_WithUpdateItemNames_Test()
+        public void UpdateMenu_WithUpdatedItemNames_Test()
         {
             var fakeFrontEndMenu = GetFakeMenu(0);
             var menuService = new MenuService(TestContext);

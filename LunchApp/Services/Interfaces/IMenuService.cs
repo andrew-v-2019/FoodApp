@@ -1,4 +1,5 @@
-﻿using Data.Models;
+﻿using System;
+using Data.Models;
 using ViewModels.Menu;
 
 namespace Services.Interfaces
@@ -12,5 +13,8 @@ namespace Services.Interfaces
         void DisableMenu(int menuId);
         Menu GetLastMenu();
         bool CheckIfOrderForMenuSubmitted(int menuId);
+        bool MenuForDateExisits(DateTime lunchDate, int menuId);
+        bool CheckIfMenuIsEditable(int menuId);
+        bool MenuIsActive(int menuId);
     }
 }

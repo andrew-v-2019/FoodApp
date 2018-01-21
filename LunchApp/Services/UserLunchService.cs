@@ -58,10 +58,6 @@ namespace Services
             {
                 try
                 {
-                    if (_menuService.CheckIfOrderForMenuSubmitted(model.MenuId))
-                    {
-                        throw new Exception(LocalizationStrings.OrderHasBeenSent);
-                    }
                     var newLunch = false;
                     var userLunch = _context.UserLunches.FirstOrDefault(x => x.UserLunchId == model.UserLunchId);
                     if (userLunch == null)
@@ -137,9 +133,6 @@ namespace Services
 
 
         #region Get
-
-
-
 
         private UserLunchViewModel GetCurrentLunch(Menu activeMenu, UserLunch lunch)
         {
@@ -244,9 +237,6 @@ namespace Services
             };
             return model;
         }
-
         #endregion
-
-
     }
 }

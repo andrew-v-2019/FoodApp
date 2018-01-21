@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using RazorEngine;
 using RazorEngine.Templating;
 using Services.Interfaces;
 using ViewModels;
 using ViewModels.Order;
+using Web.Validators;
 
 namespace Web.Controllers
 {
@@ -14,12 +14,12 @@ namespace Web.Controllers
     public class OrdersController : BaseFoodController
     {
         private readonly IOrderService _orderService;
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly OrderValidator _validator;
 
-        public OrdersController(IUserService userService, IOrderService orderService, IHostingEnvironment hostingEnvironment) : base(userService)
+        public OrdersController(IUserService userService, IOrderService orderService,OrderValidator validator) : base(userService)
         {
             _orderService = orderService;
-            _hostingEnvironment = hostingEnvironment;
+            _validator = validator;
         }
 
 
@@ -42,6 +42,8 @@ namespace Web.Controllers
         {
             try
             {
+                var results = _validator.Validate(model);
+                if (!results.IsValid) throw new Exception(results.Errors[0].ErrorMessage);
                 var savedModel = _orderService.UpdateOrder(model);
                 return Ok(savedModel);
             }
@@ -55,7 +57,7 @@ namespace Web.Controllers
         {
             var templateFile = new FileInfo(LocalizationStrings.PathToOrderEmailTemplate);
             var templateText = System.IO.File.ReadAllText(templateFile.FullName);
-            var renderedText = Engine.Razor.RunCompile(templateText, "someText", typeof(OrderViewModel), model);
+            var renderedText = Engine.Razor.RunCompile(templateText, string.Empty, typeof(OrderViewModel), model);
             return renderedText;
         }
 
@@ -64,6 +66,8 @@ namespace Web.Controllers
         {
             try
             {
+                var results = _validator.Validate(model);
+                if (!results.IsValid) throw new Exception(results.Errors[0].ErrorMessage);
                 var parsedOrderEmail = ParseOrderEmail(model);
                 var user = GetCurrentUser();
                 var savedModel = _orderService.SubmitOrder(model, user, parsedOrderEmail);

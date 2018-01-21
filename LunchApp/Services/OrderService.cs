@@ -49,6 +49,12 @@ namespace Services
             return any;
         }
 
+        public bool IsOrderSubmitted(int orderId)
+        {
+            var or = _context.Orders.FirstOrDefault(o => o.OrderId == orderId);
+            return or != null && or.Submitted;
+        }
+
         public OrderViewModel GetCurrentOrder()
         {
             var menu = _menuService.GetActiveMenu() ?? _menuService.GetLastMenu();
@@ -146,12 +152,10 @@ namespace Services
                     UpdateOrder(model);
                     var order = GetOrCreateOrder(model.MenuId);
                     order.SubmitionDate = DateTime.Now;
-
                     order.Submitted = true;
                     order.SubmittedByUserId = currentUser.Id;
                     var idsToLock = model.UserLunches.Select(l => l.UserLunchId).ToList();
                     _userLunchService.LockLunches(idsToLock);
-
                     _context.SaveChanges();
                     _menuService.DisableMenu(model.MenuId);
                     model.Submitted = true;

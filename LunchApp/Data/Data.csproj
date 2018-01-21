@@ -29,6 +29,7 @@
     <Compile Remove="Migrations\20180114115625_Initial.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="7.3.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="1.1.1" />

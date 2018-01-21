@@ -120,8 +120,17 @@
   <data name="ActiveMenuDoesntNotExist" xml:space="preserve">
     <value>Нет активного меню</value>
   </data>
+  <data name="AnotherMenuForDateExists" xml:space="preserve">
+    <value>Другое меню на эту дату создано</value>
+  </data>
   <data name="DateFormat" xml:space="preserve">
     <value>yyyy-MM-dd</value>
+  </data>
+  <data name="DateShouldBeInFuture" xml:space="preserve">
+    <value>Нельзя создать меню в прошлом</value>
+  </data>
+  <data name="IncorrectSectionStructure" xml:space="preserve">
+    <value>Меню должно иметь правильную структуру</value>
   </data>
   <data name="MenuDefaultName" xml:space="preserve">
     <value>БИЗНЕС – ЛАНЧ на {0}</value>
@@ -143,5 +152,8 @@
   </data>
   <data name="RusDateFormat" xml:space="preserve">
     <value>dd.MM.yyyy</value>
+  </data>
+  <data name="UserNameIsEmpty" xml:space="preserve">
+    <value>Вы не ввели имя</value>
   </data>
 </root>
