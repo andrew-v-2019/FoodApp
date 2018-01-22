@@ -67,12 +67,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DocConverter.cs" />
     <Compile Include="DocParser.cs" />
     <Compile Include="Models\DocLine.cs" />
     <Compile Include="ParserExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Services\Services.csproj">
+      <Project>{35DCD8A9-A155-4F7C-B407-CC9B4466D510}</Project>
+      <Name>Services</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ViewModels\ViewModels.csproj">
       <Project>{fa345a2e-558e-4557-9c12-677ab83718b3}</Project>
       <Name>ViewModels</Name>

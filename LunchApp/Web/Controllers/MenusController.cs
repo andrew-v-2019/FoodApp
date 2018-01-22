@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
+using Converters;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using ViewModels;
 using ViewModels.Menu;
 using Web.Validators;
 
@@ -54,7 +57,26 @@ namespace Web.Controllers
             {
                 return BadRequest(e);
             }
+        }
 
+        [HttpPost("saveToDoc")]
+        public IActionResult SaveToDoc([FromBody] UpdateMenuViewModel model)
+        {
+            try
+            {
+                var templateFile = new FileInfo(LocalizationStrings.PathToDocTemplate);
+                var converter = new DocConverter();
+                var str = converter.ConvertToDoc(model, templateFile);
+                var result = new FileContentResult(System.IO.File.ReadAllBytes(str), "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                {
+                    FileDownloadName = "myFile.docx"
+                };
+                return result;
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e);
+            }
         }
     }
 }

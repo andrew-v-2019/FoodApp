@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Services;
 using Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Web.Validators;
 
 namespace Web
 {
@@ -37,6 +38,9 @@ namespace Web
             services.AddScoped<IUserLunchService, UserLunchService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<MenuValidator, MenuValidator>();
+            services.AddScoped<UserLunchValidator, UserLunchValidator>();
+            services.AddScoped<OrderValidator, OrderValidator>();
             services.AddScoped<IConfigurationsProvider, ConfigurationsProvider>();
 
             services.AddCors();

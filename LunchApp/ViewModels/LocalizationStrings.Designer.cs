@@ -151,6 +151,15 @@ namespace ViewModels {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Tmpl.docx.
+        /// </summary>
+        public static string PathToDocTemplate {
+            get {
+                return ResourceManager.GetString("PathToDocTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Views/OrderTemplate.cshtml.
         /// </summary>
         public static string PathToOrderEmailTemplate {

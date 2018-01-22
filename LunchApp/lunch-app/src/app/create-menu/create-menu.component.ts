@@ -10,6 +10,9 @@ import { Constants } from 'app/Constants';
 import { MenuItem } from 'app/models/menu/menu-item';
 
 
+import { Http, Headers } from '@angular/http';
+import 'rxjs/add/operator/toPromise';
+import { saveAs } from 'file-saver/FileSaver';
 
 
 @Component({
@@ -21,7 +24,7 @@ import { MenuItem } from 'app/models/menu/menu-item';
 
 export class CreateMenuComponent implements OnInit {
 
-  constructor(private toastr: ToastsManager, private menuService: MenuService, private vcr: ViewContainerRef) {
+  constructor(private toastr: ToastsManager, private menuService: MenuService, private vcr: ViewContainerRef, private http: Http) {
     this.toastr.setRootViewContainerRef(vcr);
   }
   menu: Menu;
@@ -66,6 +69,27 @@ export class CreateMenuComponent implements OnInit {
     observer.subscribe(value => this.map(value, curMenuId));
   }
 
+  
+  saveToDoc() {
+    debugger;
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-Type', 'application/json');
+    this.http.post('http://localhost:50734/api/menus/saveToDoc',this.menu ,{ headers: headers })
+      .toPromise()
+      .then(response => this.saveToFileSystem(response));
+  }
+
+  private saveToFileSystem(response) {
+    debugger;
+    //const contentDispositionHeader: string = response.headers.get('Content-Disposition');
+    //const parts: string[] = contentDispositionHeader.split(';');
+    //const filename = parts[1].split('=')[1];
+    const blob = new Blob([response._body], {type: "octet/stream"});
+    saveAs(blob, "test.docx");
+  }
+
+
   save() {
     let m = this.menu;
     if (!m) return;
@@ -81,6 +105,7 @@ export class CreateMenuComponent implements OnInit {
   }
 
   menuUpdateEvent(r) {
+    debugger;
     this.toastr.success(Constants.successTitle, null, { showCloseButton: true });
     this.loading = false;
   }

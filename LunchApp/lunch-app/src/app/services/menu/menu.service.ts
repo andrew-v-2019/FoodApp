@@ -25,4 +25,9 @@ export class MenuService {
     return obs;
   }
 
+  saveToDoc(menu: Menu): Observable<Menu> {
+    var obs = this.menuResource.saveToDoc(menu).$observable;
+    return obs;
+  }
+
 }

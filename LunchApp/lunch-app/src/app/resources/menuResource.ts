@@ -25,5 +25,11 @@ export class MenuResource extends Resource {
         path: 'update'
       })
       updateMenu: ResourceMethod<Menu, any>;
+
+      @ResourceAction({
+        method: RequestMethod.Post,
+        path: 'saveToDoc'
+      })
+      saveToDoc: ResourceMethod<Menu, any>;
 }
 
